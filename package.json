@@ -21,11 +21,11 @@
 			}
 		],
 		"viewsContainers": {
-			"activitybar": [
+		  "activitybar": [
 				{
 					"id": "iosreIDtabbarEntery",
 					"title": "iOSre",
-					"icon": "res/iosre.svg"
+					"icon": "res/icon.svg"
 				}
 			]
 		},
