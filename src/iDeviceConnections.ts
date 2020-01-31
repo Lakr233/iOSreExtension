@@ -67,9 +67,19 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
         for(var i = 0; i < this.deviceList.length; i++) {
             console.log("    -> %s", this.deviceList[i]);
         }
-        let ret = this.deviceList.map(
-            item => new iDeviceItem(("ID: " + item.substring(0, 8).toUpperCase()), "", vscode.TreeItemCollapsibleState.None)
+        let wasADevice = false;
+        let ret: Array<iDeviceItem> = [];
+        this.deviceList.forEach(
+            item => {
+                let dev = new iDeviceItem(("ID: " + item.substring(0, 8).toUpperCase()), "", vscode.TreeItemCollapsibleState.None);
+                ret.push(dev);
+                wasADevice = true;
+            }
         );
+        if (!wasADevice) {
+            ret = [new iDeviceItem("No Device Connected", "No Device Connected", vscode.TreeItemCollapsibleState.None)];
+            ret[0].iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'pig.svg'));
+        }
         return Promise.resolve(ret);
     }
 
