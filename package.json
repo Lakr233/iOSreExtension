@@ -21,7 +21,7 @@
 			}
 		],
 		"viewsContainers": {
-		  "activitybar": [
+			"activitybar": [
 				{
 					"id": "iosreIDtabbarEntery",
 					"title": "iOSre",
@@ -33,7 +33,7 @@
 			"iosreIDtabbarEntery": [
 				{
 					"id": "iosreIDtabSectioniDevices",
-					"name": "iDevice Connection",
+					"name": "iDevices",
 					"when": ""
 				},
 				{
@@ -66,5 +66,8 @@
 		"typescript": "^3.6.4",
 		"tslint": "^5.20.0",
 		"vscode-test": "^1.2.2"
+	},
+	"dependencies": {
+		"await-semaphore": "^0.1.3"
 	}
 }
