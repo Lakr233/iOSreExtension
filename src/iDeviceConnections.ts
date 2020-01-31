@@ -5,21 +5,14 @@ import { LKutils } from './Utils';
 // tslint:disable-next-line: class-name
 export class iDeviceItem extends vscode.TreeItem {
 
-    constructor(
-        public readonly label: string,
-        public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    ){
-        super(label, collapsibleState);
+	constructor(
+		public readonly label: string,
+		private version: string,
+		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+		public readonly command?: vscode.Command
+	) {
+		super(label, collapsibleState);
     }
-
-    command = {
-        title: this.label,                  // 标题
-        command: 'iDeviceItemClick',        // 命令 ID
-        tooltip: this.label,                // 鼠标覆盖时的小小提示框
-        arguments: [                        // 向 registerCommand 传递的参数。
-            this.label,                     // 目前这里我们只传递一个 label
-        ]
-    };
 
     iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'ios.svg'));
 
@@ -34,15 +27,22 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
     public static init() {
         const np = new iDeviceNodeProvider();
         vscode.window.registerTreeDataProvider('iosreIDtabSectioniDevices', np);
+        vscode.commands.registerCommand("iosreIDtabSectioniDevices.refreshEntry", () => np.refresh());
         this.nodeProvider = np;
     }
 
-    onDidChangeTreeData?: vscode.Event<iDeviceItem | null | undefined> | undefined;
-    getTreeItem(element: iDeviceItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
+	private _onDidChangeTreeData: vscode.EventEmitter<iDeviceItem> = new vscode.EventEmitter<iDeviceItem>();
+    readonly onDidChangeTreeData: vscode.Event<iDeviceItem | undefined> = this._onDidChangeTreeData.event;
+
+    getTreeItem(element: iDeviceItem): vscode.TreeItem {
         return element;
     }
 
-    async getChildren(element?: iDeviceItem | undefined): Promise<iDeviceItem[]> {
+    refresh() {
+        iDeviceNodeProvider.nodeProvider._onDidChangeTreeData.fire();
+    }
+
+    async getChildren(element?: iDeviceItem): Promise<iDeviceItem[]> {
 
         let read = await LKutils.shared.execute("idevice_id -l");
 
@@ -67,11 +67,10 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
         for(var i = 0; i < this.deviceList.length; i++) {
             console.log("    -> %s", this.deviceList[i]);
         }
-        return this.deviceList.map(
-            item => new iDeviceItem(
-                ("ID: " + item.substring(0, 8).toUpperCase()), vscode.TreeItemCollapsibleState.None
-            )
+        let ret = this.deviceList.map(
+            item => new iDeviceItem(("ID: " + item.substring(0, 8).toUpperCase()), "", vscode.TreeItemCollapsibleState.None)
         );
+        return Promise.resolve(ret);
     }
 
 }
