@@ -1,10 +1,20 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 
 export class LKutils {
 
     public static shared = new LKutils();
+    public storagePath: string | undefined;
 
     constructor() { }
+
+    public setStoragePath(location: string) {
+        if (this.storagePath !== undefined) {
+            vscode.window.showErrorMessage("iOSre -> storagePath Already Exists");
+            return;
+        }
+        this.storagePath = location;
+    }
 
     public async execute(cmd: string): Promise<String> {
         var promise = new Promise<String>(resolve => {
@@ -30,6 +40,50 @@ export class LKutils {
             });
         });
         return promise;
+    }
+
+    // '"KEY"':'"VALUE"
+    public saveKeyPairValue(key: string, val: string) {
+        if (!fs.existsSync(this.storagePath as string)) {
+            fs.mkdirSync(this.storagePath as string);
+        }
+        const jsonFile = (this.storagePath as string) + "/envs.json";
+        if (!fs.existsSync(jsonFile)) {
+            fs.closeSync(fs.openSync(jsonFile, 'w'));
+        }
+        console.log("[i] Write key pair value: " + key + " " + val); // + " to " + jsonFile);
+        let read = fs.readFileSync(jsonFile, 'utf8');
+        if (read === "") {
+            let papapa = {"" : ""};
+            let json = JSON.stringify(papapa);
+            fs.writeFileSync(jsonFile, json, 'utf8');
+            read = fs.readFileSync(jsonFile, 'utf8');
+        }
+        let readJson = JSON.parse(read);
+        readJson[key] = val;
+        var json = JSON.stringify(readJson);
+        fs.writeFileSync(jsonFile, json, 'utf8');
+    }
+
+    public readKeyPairValue(key: string): string {
+        if (!fs.existsSync(this.storagePath as string)) {
+            fs.mkdirSync(this.storagePath as string);
+        }
+        const jsonFile = (this.storagePath as string) + "/envs.json";
+        if (!fs.existsSync(jsonFile)) {
+            fs.closeSync(fs.openSync(jsonFile, 'w'));
+        }
+        let read = fs.readFileSync(jsonFile, 'utf8');
+        if (read === "") {
+            let papapa = {"" : ""};
+            let json = JSON.stringify(papapa);
+            fs.writeFileSync(jsonFile, json, 'utf8');
+            read = fs.readFileSync(jsonFile, 'utf8');
+        }
+        let readJson = JSON.parse(read);
+        let ret = readJson[key];
+        console.log("[i] Read key pair value: " + key + " " + ret); // + " from " + jsonFile);
+        return ret;
     }
 
 }

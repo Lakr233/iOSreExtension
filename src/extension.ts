@@ -3,10 +3,13 @@ import { iDeviceNodeProvider, iDeviceItem } from './iDeviceConnections';
 import { ToolboxNodeProvider, ToolItem } from './iDeviceToolbox';
 import { ApplicationNodeProvider } from './iDeviceApplications';
 import { iDevices } from './UserEnv';
+import { LKutils } from './Utils';
 
 export function activate(context: vscode.ExtensionContext) {
 
 	console.log('Bootstraping "wiki.qaq.iosre" extension!');
+
+	LKutils.shared.setStoragePath(context.storagePath as string);
 
 	iDeviceNodeProvider.init();
 	ToolboxNodeProvider.init();

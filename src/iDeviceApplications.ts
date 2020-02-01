@@ -100,8 +100,11 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
         let haveApp = false;
         read.split("\n").forEach((item: string) => {
             const sp = item.split("|");
+            if (item === "") {
+                return;
+            }
             if (sp.length < 3) {
-                console.log("[E] Application descriptor invalid: " + read);
+                console.log("[E] Application descriptor invalid: " + item);
                 return;
             }
             haveApp = true;
@@ -110,9 +113,12 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             }
         });
         read.split("\n").forEach((item: string) => {
+            if (item === "") {
+                return;
+            }
             const sp = item.split("|");
             if (sp.length < 3) {
-                console.log("[E] Application descriptor invalid: " + read);
+                console.log("[E] Application descriptor invalid: " + item);
                 return;
             }
             haveApp = true;
