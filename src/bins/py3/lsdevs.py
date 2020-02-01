@@ -25,35 +25,17 @@ from scp import SCPClient
 from tqdm import tqdm
 import traceback
 
-if (len(sys.argv) < 2):
-    print("-> ./lsapps.py [iDevices UDID]")
-    exit(-1)
-
-if (len(sys.argv) > 2):
-    print("-> ./lsapps.py [iDevices UDID]x1")
-    exit(-1)
-
 def get_usb_iphone():
     Type = 'usb'
     if int(frida.__version__.split('.')[0]) < 12:
         Type = 'tether'
     device_manager = frida.get_device_manager()
-    changed = threading.Event()
+    devices = [dev for dev in device_manager.enumerate_devices() if dev.type == Type]
 
-    def on_changed():
-        changed.set()
+    it = iter(devices)
+    for item in it:
+        print(item.id)
 
-    device_manager.on('changed', on_changed)
+    return
 
-    device = None
-    while device is None:
-        devices = [dev for dev in device_manager.enumerate_devices() if dev.type == Type]
-        if len(devices) == 0:
-            print('Waiting for USB device...')
-            changed.wait()
-        else:
-            device = devices[0]
-
-    device_manager.off('changed', on_changed)
-
-    return device
+get_usb_iphone()

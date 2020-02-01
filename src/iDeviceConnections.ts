@@ -54,7 +54,9 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
 
     async getChildren(element?: iDeviceItem): Promise<iDeviceItem[]> {
 
-        let read = await LKutils.shared.execute("idevice_id -l");
+        let pyp = vscode.Uri.file(join(__filename,'..', '..' ,'src', 'bins', 'py3', 'lsdevs.py')).path;
+
+        let read =await LKutils.shared.python(pyp);
 
         this.deviceList = [];
         read.split("\n").forEach(element => {

@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { join } from 'path';
 import { LKutils } from './Utils';
+import { iDevices } from './UserEnv';
+import { iDeviceItem } from './iDeviceConnections';
 
 export class ToolItem extends vscode.TreeItem {
 
@@ -48,7 +50,21 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
     }
 
     public performSelector(toolObject: ToolItem) {
+        if (iDevices.shared.getDevice() === null) {
+            vscode.window.showErrorMessage("iOSre -> iDevice not selected");
+            return;
+        }
+        const vdev = iDevices.shared.getDevice() as iDeviceItem;
+        if (toolObject.label === "SSH Connect") {
 
+        } else if (toolObject.label === "Copy UDID") {
+            vscode.window.showInformationMessage("iOSre -> UDID Copied + " + vdev?.udid.substring(0, 8) + "...");
+            vscode.env.clipboard.writeText(vdev?.udid);
+        } else if (toolObject.label === "Copy ECID") {
+            vscode.window.showErrorMessage("iOSre -> undefined tool called: " + toolObject.label);
+        } else {
+            vscode.window.showErrorMessage("iOSre -> undefined tool called: " + toolObject.label);
+        }
     }
 
 	private _onDidChangeTreeData: vscode.EventEmitter<ToolItem> = new vscode.EventEmitter<ToolItem>();
