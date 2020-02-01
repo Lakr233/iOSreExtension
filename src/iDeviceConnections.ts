@@ -3,7 +3,7 @@ import { join } from 'path';
 import { LKutils } from './Utils';
 import { iDevices } from './UserEnv';
 import { ApplicationItem } from './iDeviceApplications';
-import { fstat } from 'fs';
+import { fstat, writeFileSync, unlink, unlinkSync } from 'fs';
 import { exec, ChildProcess } from 'child_process';
 import { stringify } from 'querystring';
 
@@ -112,6 +112,28 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
             this.refresh();
             return;
         }
+        if (iDeviceObject.label.startsWith("SSH Connect")) {
+            let element = iDeviceObject.father as iDeviceItem;
+            if (iDeviceNodeProvider.iProxyPool[element.udid] === undefined) {
+                let dp = (element).iSSH_devicePort;
+                let mp = (element).iSSH_mappedPort;
+                console.log("[*] Starting iProxy " + mp + " " + dp + " " + element.udid + " &");
+                let execObject = exec("iproxy " + mp + " " + dp + " " + element.udid + "", (err, stdout, stderr) => {
+                    console.log(stdout + stderr);
+                    this.refresh();
+                });
+                iDeviceNodeProvider.iProxyPool[element.udid] = execObject;
+            }
+            let terminal = vscode.window.createTerminal("SSH =>" + element.label);
+            let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
+            writeFileSync(passpath, element.iSSH_password);
+            terminal.show();
+            terminal.sendText("export SSHPASSWORD=$(cat \'" + passpath + "\')");
+            terminal.sendText("rm -f \'" + passpath + "\'");
+            terminal.sendText("sshpass -p $SSHPASSWORD ssh root@127.0.0.1 -oStrictHostKeyChecking=accept-new -p " + element.iSSH_mappedPort);
+            this.refresh();
+            return;
+        }
     }
 
 	private _onDidChangeTreeData: vscode.EventEmitter<iDeviceItem> = new vscode.EventEmitter<iDeviceItem>();
@@ -144,6 +166,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
             details.push(pp);
             let ssh = new iDeviceItem("SSH Connect ", element.udid, true, vscode.TreeItemCollapsibleState.None);
             ssh.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'shell.svg'));
+            ssh.father = element;
             details.push(ssh);
             return details;
         }
