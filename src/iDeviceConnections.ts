@@ -9,11 +9,14 @@ export class iDeviceItem extends vscode.TreeItem {
 
 	constructor(
 		public readonly label: string,
-		public readonly udid: string,
+        public readonly udid: string,
+        public readonly isinSubContext: Boolean,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState
 	) {
         super(label, collapsibleState);
-        this.tooltip = udid;
+        if (udid !== "") {
+            this.tooltip = udid;
+        }
     }
 
     iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'ios.svg'));
@@ -55,6 +58,20 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
 
     async getChildren(element?: iDeviceItem): Promise<iDeviceItem[]> {
 
+        if (element !== undefined && !(element as iDeviceItem).isinSubContext) {
+            let details: Array<iDeviceItem> = [];
+            let sshp = new iDeviceItem("Set SSH Port", element.udid, true, vscode.TreeItemCollapsibleState.None);
+            sshp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'ports.svg'));
+            details.push(sshp);
+            let sshpp = new iDeviceItem("Set SSH Pass", element.udid, true, vscode.TreeItemCollapsibleState.None);
+            sshpp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'password.svg'));
+            details.push(sshpp);
+            let ssh = new iDeviceItem("SSH Connect", element.udid, true, vscode.TreeItemCollapsibleState.None);
+            ssh.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'shell.svg'));
+            details.push(ssh);
+            return details;
+        }
+
         let pyp = vscode.Uri.file(join(__filename,'..', '..' ,'src', 'bins', 'py3', 'lsdevs.py')).path;
 
         let read =await LKutils.shared.python(pyp, "");
@@ -86,7 +103,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
         let ret: Array<iDeviceItem> = [];
         this.deviceList.forEach(
             item => {
-                let dev = new iDeviceItem(("ID: " + item.substring(0, 8).toUpperCase()), item, vscode.TreeItemCollapsibleState.None);
+                let dev = new iDeviceItem(("ID: " + item.substring(0, 8).toUpperCase()), item, false, vscode.TreeItemCollapsibleState.Collapsed);
                 ret.push(dev);
                 wasADevice += 1;
                 if (privSelected !== null && (privSelected as iDeviceItem).udid === item) {
@@ -95,7 +112,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
             }
         );
         if (wasADevice === 0) {
-            ret = [new iDeviceItem("No Device Connected", "", vscode.TreeItemCollapsibleState.None)];
+            ret = [new iDeviceItem("No Device Connected", "", false,vscode.TreeItemCollapsibleState.None)];
             ret[0].iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'pig.svg'));
         } else if (wasADevice === 1) {
             iDevices.shared.setDevice(ret[0]);

@@ -79,8 +79,9 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
     }
 
     getChildren(element?: ToolItem | undefined): vscode.ProviderResult<ToolItem[]> {
-        return ToolboxNodeProvider.tools.map (
-            item => new ToolItem(item, item, vscode.TreeItemCollapsibleState.None)
-        );
+        return [];
+        // return ToolboxNodeProvider.tools.map (
+        //     item => new ToolItem(item, item, vscode.TreeItemCollapsibleState.None)
+        // );
     }
 }
