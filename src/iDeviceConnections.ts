@@ -4,7 +4,7 @@ import { LKutils } from './Utils';
 import { iDevices } from './UserEnv';
 import { ApplicationItem } from './iDeviceApplications';
 import { fstat } from 'fs';
-import { exec } from 'child_process';
+import { exec, ChildProcess } from 'child_process';
 import { stringify } from 'querystring';
 
 // tslint:disable-next-line: class-name
@@ -47,7 +47,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
 
     public deviceList: Array<string> = []; // 储存udid
     public static nodeProvider: iDeviceNodeProvider;
-    public static iProxyPool: {[key: string]: number} = {};
+    public static iProxyPool: {[key: string]: ChildProcess} = {};
 
     public static init() {
         const np = new iDeviceNodeProvider();
@@ -96,17 +96,18 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
         }
         if (iDeviceObject.label.startsWith("iProxy:")) {
             let element = iDeviceObject.father as iDeviceItem;
-            if (iDeviceNodeProvider.iProxyPool[element.udid] === undefined || iDeviceNodeProvider.iProxyPool[element.udid] === 0) {
+            if (iDeviceNodeProvider.iProxyPool[element.udid] === undefined) {
                 let dp = (element).iSSH_devicePort;
                 let mp = (element).iSSH_mappedPort;
                 console.log("[*] Starting iProxy " + mp + " " + dp + " " + element.udid + " &");
                 let execObject = exec("iproxy " + mp + " " + dp + " " + element.udid + "", (err, stdout, stderr) => {
                     console.log(stdout + stderr);
+                    this.refresh();
                 });
-                iDeviceNodeProvider.iProxyPool[element.udid] = execObject.pid;
+                iDeviceNodeProvider.iProxyPool[element.udid] = execObject;
             } else {
-                let ret = await LKutils.shared.execute("kill -9 " + String(element.iSSH_iProxyPID) + " &> /dev/null");
-                iDeviceNodeProvider.iProxyPool[element.udid] = 0;
+                iDeviceNodeProvider.iProxyPool[element.udid].kill();
+                delete iDeviceNodeProvider.iProxyPool[element.udid];
             }
             this.refresh();
             return;
@@ -203,7 +204,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
                     dev.iSSH_password = password;
                 }
                 if (iDeviceNodeProvider.iProxyPool[dev.udid] !== undefined) {
-                    dev.iSSH_iProxyPID = iDeviceNodeProvider.iProxyPool[dev.udid];
+                    dev.iSSH_iProxyPID = iDeviceNodeProvider.iProxyPool[dev.udid].pid;
                 }
             }
         );
