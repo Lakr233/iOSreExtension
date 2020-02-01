@@ -7,14 +7,23 @@ export class iDeviceItem extends vscode.TreeItem {
 
 	constructor(
 		public readonly label: string,
-		private version: string,
-		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-		public readonly command?: vscode.Command
+		public readonly udid: string,
+		public readonly collapsibleState: vscode.TreeItemCollapsibleState
 	) {
-		super(label, collapsibleState);
+        super(label, collapsibleState);
+        this.tooltip = udid;
     }
 
     iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'ios.svg'));
+
+    command = {
+        title: this.label,
+        command: 'iDeviceSelect',
+        tooltip: this.udid,
+        arguments: [
+            this,
+        ]
+    };
 
 }
 
@@ -71,16 +80,17 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
         let ret: Array<iDeviceItem> = [];
         this.deviceList.forEach(
             item => {
-                let dev = new iDeviceItem(("ID: " + item.substring(0, 8).toUpperCase()), "", vscode.TreeItemCollapsibleState.None);
+                let dev = new iDeviceItem(("ID: " + item.substring(0, 8).toUpperCase()), item, vscode.TreeItemCollapsibleState.None);
                 ret.push(dev);
                 wasADevice = true;
             }
         );
         if (!wasADevice) {
-            ret = [new iDeviceItem("No Device Connected", "No Device Connected", vscode.TreeItemCollapsibleState.None)];
+            ret = [new iDeviceItem("No Device Connected", "", vscode.TreeItemCollapsibleState.None)];
             ret[0].iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'pig.svg'));
         }
         return Promise.resolve(ret);
     }
 
 }
+

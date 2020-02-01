@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { iDeviceNodeProvider, iDeviceItem } from './iDeviceConnections';
 import { ToolboxNodeProvider } from './iDeviceToolbox';
+import { iDevices } from './UserEnv';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -8,6 +9,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 	iDeviceNodeProvider.init();
 	ToolboxNodeProvider.init();
+
+	context.subscriptions.push(vscode.commands.registerCommand('iDeviceSelect', (deviceObject) => {
+		iDevices.shared.setDevice(deviceObject);
+	}));
 
 	let disposable = vscode.commands.registerCommand('extension.iOSreAction-ShowVersion', () => {
 		vscode.window.showInformationMessage("wiki.qaq.iosre -> Version 0.1");
