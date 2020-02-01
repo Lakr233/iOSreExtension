@@ -45,6 +45,10 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
         this.nodeProvider = np;
     }
 
+    public performSelector(iDeviceObject: iDeviceItem) {
+		iDevices.shared.setDevice(iDeviceObject);
+    }
+
 	private _onDidChangeTreeData: vscode.EventEmitter<iDeviceItem> = new vscode.EventEmitter<iDeviceItem>();
     readonly onDidChangeTreeData: vscode.Event<iDeviceItem | undefined> = this._onDidChangeTreeData.event;
 

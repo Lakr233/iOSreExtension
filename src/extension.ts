@@ -13,7 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
 	ApplicationNodeProvider.init();
 
 	context.subscriptions.push(vscode.commands.registerCommand('iDeviceSelect', (deviceObject) => {
-		iDevices.shared.setDevice(deviceObject);
+		iDeviceNodeProvider.nodeProvider.performSelector(deviceObject);
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('ToolboxCalled', (ToolObject) => {
 		ToolboxNodeProvider.nodeProvider.performSelector(ToolObject);
