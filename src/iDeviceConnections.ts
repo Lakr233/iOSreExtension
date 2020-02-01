@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { join } from 'path';
 import { LKutils } from './Utils';
 import { iDevices } from './UserEnv';
+import { ApplicationItem } from './iDeviceApplications';
 
 // tslint:disable-next-line: class-name
 export class iDeviceItem extends vscode.TreeItem {
@@ -56,7 +57,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
 
         let pyp = vscode.Uri.file(join(__filename,'..', '..' ,'src', 'bins', 'py3', 'lsdevs.py')).path;
 
-        let read =await LKutils.shared.python(pyp);
+        let read =await LKutils.shared.python(pyp, "");
 
         this.deviceList = [];
         read.split("\n").forEach(element => {

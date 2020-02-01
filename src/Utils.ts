@@ -19,12 +19,12 @@ export class LKutils {
         return promise;
     }
 
-    public async python(cmd: string): Promise<String> {
+    public async python(executable: string, arg: string): Promise<String> {
         var promise = new Promise<String>(resolve => {
             const cp = require('child_process');
-            cp.exec("python3 \'" + cmd + "\'", (err: string, stdout: string, stderr: string) => {
+            cp.exec("python3 \'" + executable + "\' " + arg, (err: string, stdout: string, stderr: string) => {
                 if (err) {
-                    vscode.window.showErrorMessage("iOSre -> EXECUTE_PYTHON_ERROR -> stderr:" + stderr + " -> stdout:" + stdout + " -> whenExec:" + cmd + "  ==> Install dependency may solve the problem.");
+                    vscode.window.showErrorMessage("iOSre -> EXECUTE_PYTHON_ERROR -> stderr:" + stderr + " -> stdout:" + stdout + " -> whenExec:" + executable + " " + arg + "  ==> Install dependency may solve the problem.");
                 }
                 resolve(stdout);
             });

@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import { iDeviceNodeProvider, iDeviceItem } from './iDeviceConnections';
 import { ToolboxNodeProvider, ToolItem } from './iDeviceToolbox';
-import { iDevices } from './UserEnv';
 import { ApplicationNodeProvider } from './iDeviceApplications';
+import { iDevices } from './UserEnv';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -17,6 +17,9 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('ToolboxCalled', (ToolObject) => {
 		ToolboxNodeProvider.nodeProvider.performSelector(ToolObject);
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand('ApplicationSelected', (AppObject) => {
+		ApplicationNodeProvider.nodeProvider.performSelector(AppObject);
 	}));
 
 	let disposable = vscode.commands.registerCommand('extension.iOSreAction-ShowVersion', () => {
