@@ -38,22 +38,25 @@ def get_usb_iphone():
     if int(frida.__version__.split('.')[0]) < 12:
         Type = 'tether'
     device_manager = frida.get_device_manager()
-    changed = threading.Event()
+    devices = [dev for dev in device_manager.enumerate_devices() if dev.type == Type]
 
-    def on_changed():
-        changed.set()
+    it = iter(devices)
+    for item in it:
+        if (item.id == sys.argv[1]):
+            return item
+    print("-> iDevice Not Found")
+    exit(-1)
 
-    device_manager.on('changed', on_changed)
+vdev = get_usb_iphone()
+try:
+    applications = vdev.enumerate_applications()
+except Exception as e:
+    sys.exit('-> Failed to enumerate applications: %s' % e)
 
-    device = None
-    while device is None:
-        devices = [dev for dev in device_manager.enumerate_devices() if dev.type == Type]
-        if len(devices) == 0:
-            print('Waiting for USB device...')
-            changed.wait()
-        else:
-            device = devices[0]
+ita = iter(applications)
 
-    device_manager.off('changed', on_changed)
 
-    return device
+for app in ita:
+    formatter = app.name + "|" + app.identifier + "|" + str(app.pid)
+    print(formatter)
+
