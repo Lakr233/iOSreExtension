@@ -7,8 +7,7 @@ export class ToolItem extends vscode.TreeItem {
 	constructor(
 		public readonly label: string,
 		private version: string,
-		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-		public readonly command?: vscode.Command
+		public readonly collapsibleState: vscode.TreeItemCollapsibleState
 	) {
         super(label, collapsibleState);
         this.iconPath = this.getToolIcon(label);
@@ -25,6 +24,16 @@ export class ToolItem extends vscode.TreeItem {
             return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'ios.svg'));
         }
     }
+
+    command = {
+        title: this.label,
+        command: 'ToolboxCalled',
+        tooltip: this.label,
+        arguments: [
+            this,
+        ]
+    };
+
 }
 
 export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
@@ -36,6 +45,10 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
         const np = new ToolboxNodeProvider();
         vscode.window.registerTreeDataProvider('iosreIDtabSectionToolboxs', np);
         this.nodeProvider = np;
+    }
+
+    public performSelector(toolObject: ToolItem) {
+
     }
 
 	private _onDidChangeTreeData: vscode.EventEmitter<ToolItem> = new vscode.EventEmitter<ToolItem>();

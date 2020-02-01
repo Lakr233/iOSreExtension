@@ -61,6 +61,8 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             return Promise.resolve(ret);
         }
 
+
+
         return Promise.resolve(ret);
     }
 
