@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { iDeviceNodeProvider, iDeviceItem } from './iDeviceConnections';
 import { ToolboxNodeProvider } from './iDeviceToolbox';
 import { iDevices } from './UserEnv';
+import { ApplicationNodeProvider } from './iDeviceApplications';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -9,6 +10,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	iDeviceNodeProvider.init();
 	ToolboxNodeProvider.init();
+	ApplicationNodeProvider.init();
 
 	context.subscriptions.push(vscode.commands.registerCommand('iDeviceSelect', (deviceObject) => {
 		iDevices.shared.setDevice(deviceObject);

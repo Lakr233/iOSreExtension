@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { join } from 'path';
 import { LKutils } from './Utils';
+import { iDevices } from './UserEnv';
 
 // tslint:disable-next-line: class-name
 export class iDeviceItem extends vscode.TreeItem {
@@ -76,18 +77,28 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
         for(var i = 0; i < this.deviceList.length; i++) {
             console.log("    -> %s", this.deviceList[i]);
         }
-        let wasADevice = false;
+        let wasADevice = 0;
+        let foundSelectedDevice = false;
+        let privSelected = iDevices.shared.getDevice();
         let ret: Array<iDeviceItem> = [];
         this.deviceList.forEach(
             item => {
                 let dev = new iDeviceItem(("ID: " + item.substring(0, 8).toUpperCase()), item, vscode.TreeItemCollapsibleState.None);
                 ret.push(dev);
-                wasADevice = true;
+                wasADevice += 1;
+                if (privSelected !== null && (privSelected as iDeviceItem).udid === item) {
+                    foundSelectedDevice = true;
+                }
             }
         );
-        if (!wasADevice) {
+        if (wasADevice === 0) {
             ret = [new iDeviceItem("No Device Connected", "", vscode.TreeItemCollapsibleState.None)];
             ret[0].iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'pig.svg'));
+        } else if (wasADevice === 1) {
+            iDevices.shared.setDevice(ret[0]);
+        }
+        if (!foundSelectedDevice && privSelected !== null) {
+            iDevices.shared.setDevice(null);
         }
         return Promise.resolve(ret);
     }

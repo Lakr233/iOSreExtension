@@ -26,6 +26,14 @@
 					"light": "res/reload.svg",
 					"dark": "res/reload.svg"
 				}
+			},
+			{
+				"command": "iosreIDtabSectionApplications.refreshEntry",
+				"title": "Refresh",
+				"icon": {
+					"light": "res/reload.svg",
+					"dark": "res/reload.svg"
+				}
 			}
 		],
 		"viewsContainers": {
@@ -45,6 +53,11 @@
 					"when": ""
 				},
 				{
+					"id": "iosreIDtabSectionApplications",
+					"name": "Applications",
+					"when": ""
+				},
+				{
 					"id": "iosreIDtabSectionToolboxs",
 					"name": "Toolbox",
 					"when": ""
@@ -56,6 +69,11 @@
 				{
 					"command": "iosreIDtabSectioniDevices.refreshEntry",
 					"when": "view == iosreIDtabSectioniDevices",
+					"group": "navigation"
+				},
+				{
+					"command": "iosreIDtabSectionApplications.refreshEntry",
+					"when": "view == iosreIDtabSectionApplications",
 					"group": "navigation"
 				}
 			]

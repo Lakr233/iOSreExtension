@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as iDeviceDeps from './iDeviceConnections';
 import { iDeviceNodeProvider } from './iDeviceConnections';
+import { ApplicationNodeProvider } from './iDeviceApplications';
 
 // tslint:disable-next-line: class-name
 export class iDevices {
@@ -17,13 +18,20 @@ export class iDevices {
         const vdev = devObject as iDeviceDeps.iDeviceItem;
         if (devObject === null || vdev.udid === "") {
 			console.log("[E] iDevice Selection Invalid");
-			vscode.window.showErrorMessage("iOSre -> Failed to set device. Refreshing...");
-			iDeviceNodeProvider.nodeProvider.refresh();
+			vscode.window.showErrorMessage("iOSre -> setDevice (null)");
             return;
         }
 		console.log("[*] User selected device: " + devObject.udid);
-		vscode.window.showInformationMessage("iOSre -> Selected device: " + devObject.udid);
+        vscode.window.showInformationMessage("iOSre -> Selected device: " + devObject.udid.substring(0, 16).toUpperCase() + " +");
+        this.reloadDevice();
     }
 
+    public getDevice(): iDeviceDeps.iDeviceItem | null {
+        return this.selectedDevice;
+    }
+
+    private reloadDevice() {
+        ApplicationNodeProvider.nodeProvider.refresh();
+    }
 
 }
