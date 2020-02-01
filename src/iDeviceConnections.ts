@@ -97,14 +97,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
         if (iDeviceObject.label.startsWith("iProxy:")) {
             let element = iDeviceObject.father as iDeviceItem;
             if (iDeviceNodeProvider.iProxyPool[element.udid] === undefined) {
-                let dp = (element).iSSH_devicePort;
-                let mp = (element).iSSH_mappedPort;
-                console.log("[*] Starting iProxy " + mp + " " + dp + " " + element.udid + " &");
-                let execObject = exec("iproxy " + mp + " " + dp + " " + element.udid + "", (err, stdout, stderr) => {
-                    console.log(stdout + stderr);
-                    this.refresh();
-                });
-                iDeviceNodeProvider.iProxyPool[element.udid] = execObject;
+                this.ensureiProxy(element);
             } else {
                 iDeviceNodeProvider.iProxyPool[element.udid].kill();
                 delete iDeviceNodeProvider.iProxyPool[element.udid];
@@ -114,16 +107,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
         }
         if (iDeviceObject.label.startsWith("SSH Connect")) {
             let element = iDeviceObject.father as iDeviceItem;
-            if (iDeviceNodeProvider.iProxyPool[element.udid] === undefined) {
-                let dp = (element).iSSH_devicePort;
-                let mp = (element).iSSH_mappedPort;
-                console.log("[*] Starting iProxy " + mp + " " + dp + " " + element.udid + " &");
-                let execObject = exec("iproxy " + mp + " " + dp + " " + element.udid + "", (err, stdout, stderr) => {
-                    console.log(stdout + stderr);
-                    this.refresh();
-                });
-                iDeviceNodeProvider.iProxyPool[element.udid] = execObject;
-            }
+            this.ensureiProxy(element);
             let terminal = vscode.window.createTerminal("SSH =>" + element.label);
             let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
             writeFileSync(passpath, element.iSSH_password);
@@ -133,6 +117,19 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
             terminal.sendText("sshpass -p $SSHPASSWORD ssh root@127.0.0.1 -oStrictHostKeyChecking=accept-new -p " + element.iSSH_mappedPort);
             this.refresh();
             return;
+        }
+    }
+
+    public ensureiProxy(element: iDeviceItem) {
+        if (iDeviceNodeProvider.iProxyPool[element.udid] === undefined) {
+            let dp = (element).iSSH_devicePort;
+            let mp = (element).iSSH_mappedPort;
+            console.log("[*] Starting iProxy " + mp + " " + dp + " " + element.udid + " &");
+            let execObject = exec("iproxy " + mp + " " + dp + " " + element.udid + "", (err, stdout, stderr) => {
+                console.log(stdout + stderr);
+                this.refresh();
+            });
+            iDeviceNodeProvider.iProxyPool[element.udid] = execObject;
         }
     }
 
@@ -197,7 +194,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
             console.log("    -> %s", this.deviceList[i]);
         }
         let wasADevice = 0;
-        let foundSelectedDevice = false;
+        let foundSelectedDevice: iDeviceItem | undefined;
         let privSelected = iDevices.shared.getDevice();
         let ret: Array<iDeviceItem> = [];
         this.deviceList.forEach(
@@ -206,7 +203,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
                 ret.push(dev);
                 wasADevice += 1;
                 if (privSelected !== null && (privSelected as iDeviceItem).udid === item) {
-                    foundSelectedDevice = true;
+                    foundSelectedDevice = dev;
                 }
                 let readdevport = LKutils.shared.readKeyPairValue(dev.udid + "iSSH_devicePort");
                 if (readdevport === undefined || readdevport === "" || Number(readdevport) < 1) {
@@ -237,8 +234,10 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
         } else if (wasADevice === 1) {
             iDevices.shared.setDevice(ret[0]);
         }
-        if (!foundSelectedDevice && privSelected !== null) {
+        if (foundSelectedDevice === undefined && privSelected !== null) {
             iDevices.shared.setDevice(null);
+        } else if (foundSelectedDevice !== undefined) {
+            iDevices.shared.setDevice(foundSelectedDevice);
         }
         return Promise.resolve(ret);
     }

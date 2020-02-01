@@ -20,7 +20,7 @@ export class iDevices {
         }
         this.selectedDevice = devObject;
         const vdev = devObject as iDeviceDeps.iDeviceItem;
-        if (devObject === null || vdev.udid === "") {
+        if (devObject === null) {
 			console.log("[E] iDevice Selection Invalid");
 			vscode.window.showErrorMessage("iOSre -> setDevice (null)");
             return;
