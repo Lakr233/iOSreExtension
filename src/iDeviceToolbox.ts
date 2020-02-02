@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { join } from 'path';
 import { LKutils } from './Utils';
 import { iDevices } from './iDevices';
-import { iDeviceItem } from './iDeviceConnections';
+import { iDeviceItem, iDeviceNodeProvider } from './iDeviceConnections';
 
 export class ToolItem extends vscode.TreeItem {
 
@@ -61,14 +61,17 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
             return;
         }
         if (toolObject.label === "sbreload") {
+            iDeviceNodeProvider.nodeProvider.ensureiProxy(vdev);
             iDevices.shared.executeOnDevice("sbreload");
             return;
         }
         if (toolObject.label === "ldrestart") {
+            iDeviceNodeProvider.nodeProvider.ensureiProxy(vdev);
             iDevices.shared.executeOnDevice("ldrestart &");
             return;
         }
         if (toolObject.label === "Safemode") {
+            iDeviceNodeProvider.nodeProvider.ensureiProxy(vdev);
             iDevices.shared.executeOnDevice("killall -SEGV SpringBoard");
             return;
         }
