@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { join } from 'path';
 import { LKutils } from './Utils';
-import { iDevices } from './UserEnv';
+import { iDevices } from './iDevices';
 import { utils } from 'mocha';
 import { iDeviceItem, iDeviceNodeProvider } from './iDeviceConnections';
 import { openSync, writeFileSync, realpath, read } from 'fs';
@@ -178,7 +178,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             let pid:string = element.infoObject[2];
             if (pid !== "0") {
                 let po = new ApplicationItem(pid, true, [], vscode.TreeItemCollapsibleState.None);
-                po.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'pid.svg'));
+                po.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'id.svg'));
                 details.push(po);
             }
             let id:string = element.infoObject[1];

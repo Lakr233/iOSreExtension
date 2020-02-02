@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { join } from 'path';
 import { LKutils } from './Utils';
-import { iDevices } from './UserEnv';
+import { iDevices } from './iDevices';
 import { ApplicationItem } from './iDeviceApplications';
 import { fstat, writeFileSync, unlink, unlinkSync } from 'fs';
 import { exec, ChildProcess } from 'child_process';
@@ -160,7 +160,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
             pass.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'password.svg'));
             details.push(pass);
             let pp = new iDeviceItem("iProxy: " + element.iSSH_iProxyPID, element.udid, true, vscode.TreeItemCollapsibleState.None);
-            pp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'pid.svg'));
+            pp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'id.svg'));
             pp.father = element;
             details.push(pp);
             let ssh = new iDeviceItem("SSH Connect ", element.udid, true, vscode.TreeItemCollapsibleState.None);

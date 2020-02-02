@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { iDeviceNodeProvider, iDeviceItem } from './iDeviceConnections';
 import { ToolboxNodeProvider, ToolItem } from './iDeviceToolbox';
 import { ApplicationNodeProvider } from './iDeviceApplications';
-import { iDevices } from './UserEnv';
+import { iDevices } from './iDevices';
 import { LKutils } from './Utils';
 import { readFileSync, mkdirSync } from 'fs';
 import { execSync } from 'child_process';

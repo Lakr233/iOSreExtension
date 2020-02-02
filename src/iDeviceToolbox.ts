@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { join } from 'path';
 import { LKutils } from './Utils';
-import { iDevices } from './UserEnv';
+import { iDevices } from './iDevices';
 import { iDeviceItem } from './iDeviceConnections';
 
 export class ToolItem extends vscode.TreeItem {
@@ -16,12 +16,12 @@ export class ToolItem extends vscode.TreeItem {
     }
 
     private getToolIcon(name: String): vscode.Uri {
-        if (name === "SSH Connect") {
-            return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'shell.svg'));
-        } else if (name === "Copy UDID" || name === "Copy ECID" ) {
+        if (name === "Copy UDID" || name === "Copy ECID") {
             return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'copy.svg'));
-        }  else if (name === "Show Details" ) {
-            return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'info.svg'));
+        }  else if (name === "sbreload" || name === "ldrestart") {
+            return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'reload.svg'));
+        } else if (name === "Safemode") {
+            return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'safe.svg'));
         } else {
             return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'ios.svg'));
         }
@@ -40,7 +40,7 @@ export class ToolItem extends vscode.TreeItem {
 
 export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
 
-    public static tools = ["SSH Connect", "Copy UDID", "Copy ECID", "Show Details"];
+    public static tools = ["Copy UDID", "sbreload", "ldrestart", "Safemode"];
     public static nodeProvider: ToolboxNodeProvider;
 
     public static init() {
@@ -55,16 +55,24 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
             return;
         }
         const vdev = iDevices.shared.getDevice() as iDeviceItem;
-        if (toolObject.label === "SSH Connect") {
-
-        } else if (toolObject.label === "Copy UDID") {
+        if (toolObject.label === "Copy UDID") {
             vscode.window.showInformationMessage("iOSre -> UDID Copied + " + vdev?.udid.substring(0, 8) + "...");
             vscode.env.clipboard.writeText(vdev?.udid);
-        } else if (toolObject.label === "Copy ECID") {
-            vscode.window.showErrorMessage("iOSre -> undefined tool called: " + toolObject.label);
-        } else {
-            vscode.window.showErrorMessage("iOSre -> undefined tool called: " + toolObject.label);
+            return;
         }
+        if (toolObject.label === "sbreload") {
+            iDevices.shared.executeOnDevice("sbreload");
+            return;
+        }
+        if (toolObject.label === "ldrestart") {
+            iDevices.shared.executeOnDevice("ldrestart &");
+            return;
+        }
+        if (toolObject.label === "Safemode") {
+            iDevices.shared.executeOnDevice("killall -SEGV SpringBoard");
+            return;
+        }
+        vscode.window.showErrorMessage("iOSre -> undefined tool called: " + toolObject.label);
     }
 
 	private _onDidChangeTreeData: vscode.EventEmitter<ToolItem> = new vscode.EventEmitter<ToolItem>();
@@ -79,9 +87,8 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
     }
 
     getChildren(element?: ToolItem | undefined): vscode.ProviderResult<ToolItem[]> {
-        return [];
-        // return ToolboxNodeProvider.tools.map (
-        //     item => new ToolItem(item, item, vscode.TreeItemCollapsibleState.None)
-        // );
+        return ToolboxNodeProvider.tools.map (
+            item => new ToolItem(item, item, vscode.TreeItemCollapsibleState.None)
+        );
     }
 }
