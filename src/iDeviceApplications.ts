@@ -99,7 +99,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
         if (ApplicationObject.label === "- dyld Start") {
             let selection = iDevices.shared.getDevice() as iDeviceItem;
             iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
-            let terminal = vscode.window.createTerminal("Decrypt => " + ApplicationObject.infoObject[1]);
+            let terminal = vscode.window.createTerminal("Starting => " + ApplicationObject.infoObject[1]);
             terminal.show();
             let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
             writeFileSync(passpath, selection.iSSH_password);
@@ -120,6 +120,40 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             });
             writeFileSync(bashpath, bashScript, 'utf8');
             terminal.sendText("/bin/bash -C \'" + bashpath + "\' && exit");
+            vscode.window.onDidCloseTerminal((isthisone) => {
+                if (isthisone.name === "Starting => " + ApplicationObject.infoObject[1]) {
+                    this.refresh();
+                }
+            });
+            return;
+        }
+        if (ApplicationObject.label === "- Terminate") {
+            let selection = iDevices.shared.getDevice() as iDeviceItem;
+            iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
+            let terminal = vscode.window.createTerminal("Terminate => " + ApplicationObject.infoObject[1]);
+            terminal.show();
+            let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
+            writeFileSync(passpath, selection.iSSH_password);
+            terminal.show();
+            let aopen = vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'iOS' ,'open'));
+            let terminalCommands: Array<string> = [];
+            terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
+            terminalCommands.push("rm -f \'" + passpath + "\'");
+            terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\"");
+            terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p 2222 root@127.0.0.1 kill -9 " + ApplicationObject.infoObject[2]);
+            let bashScript = "";
+            let bashpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
+            terminalCommands.forEach((cmd) => {
+                bashScript += "\n";
+                bashScript += cmd;
+            });
+            writeFileSync(bashpath, bashScript, 'utf8');
+            terminal.sendText("/bin/bash -C \'" + bashpath + "\' && exit");
+            vscode.window.onDidCloseTerminal((isthisone) => {
+                if (isthisone.name === "Terminate => " + ApplicationObject.infoObject[1]) {
+                    this.refresh();
+                }
+            });
             return;
         }
         vscode.env.clipboard.writeText(ApplicationObject.label);
@@ -155,6 +189,12 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             start.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'start.svg'));
             start.infoObject = element.infoObject;
             details.push(start);
+            if (Number(element.infoObject[2]) > 0) {
+                let stop = new ApplicationItem("- Terminate", true, [], vscode.TreeItemCollapsibleState.None);
+                stop.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'terminate.svg'));
+                stop.infoObject = element.infoObject;
+                details.push(stop);
+            }
             let dmp = new ApplicationItem("- Decrypt & Dump", true, [], vscode.TreeItemCollapsibleState.None);
             dmp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'exchange.svg'));
             dmp.infoObject = element.infoObject;

@@ -131,6 +131,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
                 this.refresh();
             });
             iDeviceNodeProvider.iProxyPool[element.udid] = execObject;
+            this.refresh();
         }
     }
 
