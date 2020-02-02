@@ -211,7 +211,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             bid.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'xcode.svg'));
             details.push(bid);
             let start = new ApplicationItem("- dyld Start", true, [], vscode.TreeItemCollapsibleState.None);
-            start.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'start.svg'));
+            start.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'rocket.svg'));
             start.infoObject = element.infoObject;
             details.push(start);
             if (Number(element.infoObject[2]) > 0) {
