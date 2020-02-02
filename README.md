@@ -5,6 +5,7 @@ This is the README for your extension "wikiqaqiosre".
 ## Suggest Theme
 
 - Huacat Pink Theme
+
 This is the development used theme, with all svg image resources used uder the same theme
 
 ## Features
