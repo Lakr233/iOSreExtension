@@ -114,7 +114,8 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
             terminal.show();
             terminal.sendText("export SSHPASSWORD=$(cat \'" + passpath + "\')");
             terminal.sendText("rm -f \'" + passpath + "\'");
-            terminal.sendText("sshpass -p $SSHPASSWORD ssh root@127.0.0.1 -oStrictHostKeyChecking=accept-new -p " + element.iSSH_mappedPort);
+            terminal.sendText("ssh-keygen -R \"[127.0.0.1]:" + element.iSSH_mappedPort + "\"");
+            terminal.sendText("sshpass -p $SSHPASSWORD ssh root@127.0.0.1 -oStrictHostKeyChecking=no -p " + element.iSSH_mappedPort);
             this.refresh();
             return;
         }

@@ -5,15 +5,33 @@ export class LKutils {
 
     public static shared = new LKutils();
     public storagePath: string | undefined;
+    public userHome: String | undefined;
 
     constructor() { }
 
-    public setStoragePath(location: string) {
+    public setStoragePath(location: string | undefined) {
+        console.log("[i] setStoragePath called with: " + location);
         if (this.storagePath !== undefined) {
             vscode.window.showErrorMessage("iOSre -> storagePath Already Exists");
             return;
         }
+        if (location === undefined) {
+            if (this.userHome === undefined) {
+                vscode.window.showErrorMessage("iOSre -> No where to save docs");
+            }
+            this.storagePath = (this.userHome as string) + "/iOSre";
+            return;
+        }
         this.storagePath = location;
+    }
+
+    public setUserHome(location: string) {
+        console.log("[i] setUserHome called with: " + location);
+        if (this.userHome !== undefined) {
+            vscode.window.showErrorMessage("iOSre -> userHome Already Exists");
+            return;
+        }
+        this.userHome = location;
     }
 
     public async execute(cmd: string): Promise<String> {
