@@ -5,6 +5,7 @@ import { iDevices } from './iDevices';
 import { utils } from 'mocha';
 import { iDeviceItem, iDeviceNodeProvider } from './iDeviceConnections';
 import { openSync, writeFileSync, realpath, read } from 'fs';
+import { execSync } from 'child_process';
 
 // tslint:disable-next-line: class-name
 export class ApplicationItem extends vscode.TreeItem {
@@ -156,6 +157,30 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             });
             return;
         }
+        if (ApplicationObject.label === "- Watch Logs") {
+            let selection = iDevices.shared.getDevice() as iDeviceItem;
+            iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
+            let terminal = vscode.window.createTerminal("Watch => " + ApplicationObject.infoObject[1]);
+            terminal.show();
+            let readps = iDevices.shared.executeOnDevice("ps -e");
+            let processName: string | undefined;
+            readps.split("\n").forEach((line) => {
+                if (line.startsWith(String(ApplicationObject.infoObject[2]))) {
+                    let sp = line.split("/");
+                    let name = sp[sp.length - 1];
+                    console.log("[*] Captured name : " + name);
+                    processName = name;
+                }
+            });
+            if (processName === undefined) {
+                vscode.window.showErrorMessage("iOSre -> Error obtain executable name: " + ApplicationObject.infoObject[1]);
+                return;
+            }
+            let watcherbin = vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'local' ,'idsyslog'));
+            execSync("chmod +x \'" + watcherbin.path + "\'");
+            terminal.sendText("\'" + watcherbin.path + "\' " + selection.udid + " \'" + processName + "\'");
+            return;
+        }
         vscode.env.clipboard.writeText(ApplicationObject.label);
         vscode.window.showInformationMessage("Cpoied Item: " + ApplicationObject.label);
     }
@@ -194,6 +219,10 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 stop.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'terminate.svg'));
                 stop.infoObject = element.infoObject;
                 details.push(stop);
+                let log = new ApplicationItem("- Watch Logs", true, [], vscode.TreeItemCollapsibleState.None);
+                log.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'log.svg'));
+                log.infoObject = element.infoObject;
+                details.push(log);
             }
             let dmp = new ApplicationItem("- Decrypt & Dump", true, [], vscode.TreeItemCollapsibleState.None);
             dmp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'exchange.svg'));

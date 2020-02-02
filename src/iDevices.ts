@@ -4,6 +4,7 @@ import { iDeviceNodeProvider } from './iDeviceConnections';
 import { ApplicationNodeProvider } from './iDeviceApplications';
 import { LKutils } from './Utils';
 import { writeFileSync } from 'fs';
+import { execSync } from 'child_process';
 
 // tslint:disable-next-line: class-name
 export class iDevices {
@@ -39,10 +40,10 @@ export class iDevices {
         ApplicationNodeProvider.nodeProvider.refresh();
     }
 
-    public executeOnDevice(cmd: string) {
+    public executeOnDevice(cmd: string): string {
         if (this.selectedDevice === undefined) {
             vscode.window.showErrorMessage("iOSre -> No device selected");
-            return;
+            return "";
         }
         let selection = this.selectedDevice as iDeviceDeps.iDeviceItem;
         iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
@@ -61,7 +62,8 @@ export class iDevices {
         });
         writeFileSync(bashpath, bashScript, 'utf8');
         let realCmd = "/bin/bash -C \'" + bashpath + "\' && exit";
-        LKutils.shared.execute(realCmd);
+        let executeObject = execSync(realCmd);
+        return executeObject.toString();
     }
 
 }
