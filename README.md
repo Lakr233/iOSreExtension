@@ -1,10 +1,10 @@
 # wikiqaqiosre README
 
-This is the README for your extension "wikiqaqiosre". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "wikiqaqiosre".
 
 ## Suggest Theme
 
-Suggested Color Theme -> Huacat Pink Theme
+- Huacat Pink Theme
 This is the development used theme, with all svg image resources used uder the same theme
 
 ## Features
