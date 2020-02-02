@@ -21,6 +21,14 @@ There are some tools that you need to install on your own listed below.
 - libimobiledevice
 - sshpass
 
+## Installation
+
+- cd $HOME/.vscode/extensions
+- git clone https://lab.qaq.wiki/Lakr233/iOSreExtension.git
+- cd iOSreExtension
+- npm install
+- npm run compile
+
 ## Extension Settings
 
 There should be none confuguration hiding away from GUI so go and select that camera then you will find out.
