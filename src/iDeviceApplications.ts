@@ -88,10 +88,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                     if (isthisone.name === "Decrypt => " + ApplicationObject.infoObject[1]) {
                         vscode.window.showInformationMessage("iOSre -> Decrypt " + ApplicationObject.infoObject[0] + " has finished", "open").then((selection) => {
                             if (selection === "open") {
-                                vscode.workspace.updateWorkspaceFolders(0,0,{
-                                    uri: vscode.Uri.file(LKutils.shared.userHome + "/iOSre/"),
-                                    name: ApplicationObject.infoObject[0]
-                                });
+                                LKutils.shared.execute("open ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
                             }
                         });
                     }

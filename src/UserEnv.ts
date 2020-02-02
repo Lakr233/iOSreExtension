@@ -16,7 +16,6 @@ export class iDevices {
     public setDevice(devObject: iDeviceDeps.iDeviceItem | null) {
         if (this.selectedDevice === devObject) {
             console.log("[i] this.selectedDevice === devObject");
-            return;
         }
         this.selectedDevice = devObject;
         const vdev = devObject as iDeviceDeps.iDeviceItem;
