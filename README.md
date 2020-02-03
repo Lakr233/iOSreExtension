@@ -22,33 +22,12 @@ There are some tools that you need to install on your own listed below.
 - libimobiledevice
 - sshpass
 
-## PIP3 Requirements
-
-- asn1crypto
-- bcrypt
-- cffi
-- colorama
-- cryptography
-- enum34
-- frida-tools
-- idna
-- ipaddress
-- paramiko
-- prompt-toolkit
-- pyasn1
-- pycparser
-- Pygments
-- PyNaCl
-- scp
-- six
-- tqdm
-- wcwidth
-
 ## Installation
 
 - cd $HOME/.vscode/extensions
 - git clone https://lab.qaq.wiki/Lakr233/iOSreExtension.git
 - cd iOSreExtension
+- pip3 install -r ./requirements.txt
 - npm install
 - npm run compile
 

@@ -77,6 +77,6 @@ ita = iter(applications)
 
 for app in ita:
     smallicon = tobase64Uri(app.get_small_icon())
-    formatter = app.name + "|" + app.identifier + "|" + str(app.pid) + "|" + smallicon
+    formatter = str(app.name) + "|" + str(app.identifier) + "|" + str(app.pid) + "|" + str(smallicon)
     print(formatter)
 

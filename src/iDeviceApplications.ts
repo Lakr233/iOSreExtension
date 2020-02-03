@@ -75,8 +75,8 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 terminalCommands.push("rm -f \'" + passpath + "\'");
                 terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\"");
                 terminalCommands.push("sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -P" + selection.iSSH_mappedPort + " " + aopen.path + " root@127.0.0.1:/bin/");
-                terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p 2222 root@127.0.0.1 \'ldid -S /bin/ &> /dev/null\'");
-                terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p 2222 root@127.0.0.1 /bin/open " + ApplicationObject.infoObject[1]);
+                terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'ldid -S /bin/ &> /dev/null\'");
+                terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 /bin/open " + ApplicationObject.infoObject[1]);
                 terminalCommands.push("mkdir -p ~/Documents/iOSre");
                 terminalCommands.push("rm -rf ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
                 terminalCommands.push("rm -f ~/Documents/iOSre/" + ApplicationObject.infoObject[1] + ".ipa");
@@ -118,8 +118,8 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             terminalCommands.push("rm -f \'" + passpath + "\'");
             terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\"");
             terminalCommands.push("sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -P" + selection.iSSH_mappedPort + " " + aopen.path + " root@127.0.0.1:/bin/");
-            terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p 2222 root@127.0.0.1 \'ldid -S /bin/ &> /dev/null\'");
-            terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p 2222 root@127.0.0.1 /bin/open " + ApplicationObject.infoObject[1]);
+            terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'ldid -S /bin/ &> /dev/null\'");
+            terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 /bin/open " + ApplicationObject.infoObject[1]);
             let bashScript = "";
             let bashpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
             terminalCommands.forEach((cmd) => {
@@ -148,7 +148,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
             terminalCommands.push("rm -f \'" + passpath + "\'");
             terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\"");
-            terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p 2222 root@127.0.0.1 kill -9 " + ApplicationObject.infoObject[2]);
+            terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 kill -9 " + ApplicationObject.infoObject[2]);
             let bashScript = "";
             let bashpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
             terminalCommands.forEach((cmd) => {
@@ -186,6 +186,28 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             let watcherbin = vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'local' ,'idsyslog'));
             execSync("chmod +x \'" + watcherbin.path + "\'");
             terminal.sendText("\'" + watcherbin.path + "\' " + selection.udid + " \'" + processName + "\'");
+            return;
+        }
+        if (ApplicationObject.label === "- Debugger > Frida") {
+            let selection = iDevices.shared.getDevice() as iDeviceItem;
+            iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
+            let terminal = vscode.window.createTerminal("Frida => " + ApplicationObject.infoObject[1]);
+            terminal.show();
+            terminal.sendText("frida --device=" + selection.udid + " -p " + ApplicationObject.infoObject[2]);
+            return;
+        }
+        if (ApplicationObject.label === "- Debugger > lldb") {
+            let selection = iDevices.shared.getDevice() as iDeviceItem;
+            iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
+            let terminal = vscode.window.createTerminal("lldb => " + ApplicationObject.infoObject[1]);
+            let randport = Math.floor(Math.random() * 2000) + 2000;
+            iDevices.shared.executeOnDeviceAsync("debugserver localhost:" + String(randport) + " --attach=" + ApplicationObject.infoObject[2] + " &");
+            terminal.show();
+            terminal.sendText("echo 'If anything went wrong, make sure to have debugserver and screen installed on your device then restart the app and try again'");
+            terminal.sendText("iproxy " + String(randport) + " " + String(randport) + " &");
+            terminal.sendText("lldb");
+            execSync("sleep 3");
+            terminal.sendText("process connect connect://127.0.0.1:" + String(randport) + "");
             return;
         }
         vscode.env.clipboard.writeText(ApplicationObject.label);
@@ -230,6 +252,14 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 log.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'log.svg'));
                 log.infoObject = element.infoObject;
                 details.push(log);
+                let frida = new ApplicationItem("- Debugger > Frida", true, [], vscode.TreeItemCollapsibleState.None);
+                frida.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'debug.svg'));
+                frida.infoObject = element.infoObject;
+                details.push(frida);
+                let lldb = new ApplicationItem("- Debugger > lldb", true, [], vscode.TreeItemCollapsibleState.None);
+                lldb.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'debug.svg'));
+                lldb.infoObject = element.infoObject;
+                details.push(lldb);
             }
             let dmp = new ApplicationItem("- Decrypt & Dump", true, [], vscode.TreeItemCollapsibleState.None);
             dmp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'exchange.svg'));
