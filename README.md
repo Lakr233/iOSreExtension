@@ -13,7 +13,7 @@ This is the development used theme, with all svg image resources used uder the s
 A powerfull tool for iOSre projects.
 
 
-![Hi](images/main.png)
+\!\[Hi\]\(images/main.png\)
 
 ## Requirements
 

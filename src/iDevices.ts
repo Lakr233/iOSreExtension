@@ -5,6 +5,7 @@ import { ApplicationNodeProvider } from './iDeviceApplications';
 import { LKutils } from './Utils';
 import { writeFileSync } from 'fs';
 import { execSync } from 'child_process';
+import { ToolboxNodeProvider } from './iDeviceToolbox';
 
 // tslint:disable-next-line: class-name
 export class iDevices {
@@ -38,6 +39,7 @@ export class iDevices {
 
     private reloadDevice() {
         ApplicationNodeProvider.nodeProvider.refresh();
+        ToolboxNodeProvider.nodeProvider.refresh();
     }
 
     public executeOnDevice(cmd: string): string {

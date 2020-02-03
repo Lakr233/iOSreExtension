@@ -90,8 +90,17 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
     }
 
     getChildren(element?: ToolItem | undefined): vscode.ProviderResult<ToolItem[]> {
-        return ToolboxNodeProvider.tools.map (
-            item => new ToolItem(item, item, vscode.TreeItemCollapsibleState.None)
-        );
+
+        let dev = iDevices.shared.getDevice();
+        if (dev === undefined || dev === null) {
+            return [new ToolItem("NO SELECTION", "", vscode.TreeItemCollapsibleState.None)];
+        }
+
+        let ret: Array<ToolItem> = [];
+        ret.push(new ToolItem("-> " + dev.label, "", vscode.TreeItemCollapsibleState.None));
+        ToolboxNodeProvider.tools.forEach((str) => {
+            ret.push(new ToolItem(str, "", vscode.TreeItemCollapsibleState.None));
+        });
+        return ret;
     }
 }
