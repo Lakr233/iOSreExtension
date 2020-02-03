@@ -18,9 +18,31 @@ A powerfull tool for iOSre projects.
 ## Requirements
 
 There are some tools that you need to install on your own listed below.
-- Frida
+- Frida (both macOS & iOS)
 - libimobiledevice
 - sshpass
+
+## PIP3 Requirements
+
+- asn1crypto
+- bcrypt
+- cffi
+- colorama
+- cryptography
+- enum34
+- frida-tools
+- idna
+- ipaddress
+- paramiko
+- prompt-toolkit
+- pyasn1
+- pycparser
+- Pygments
+- PyNaCl
+- scp
+- six
+- tqdm
+- wcwidth
 
 ## Installation
 
