@@ -25,7 +25,7 @@ There are some tools that you need to install on your own listed below.
 ## Installation
 
 - cd $HOME/.vscode/extensions
-- git clone https://lab.qaq.wiki/Lakr233/iOSreExtension.git
+- git clone ........................
 - cd iOSreExtension
 - pip3 install -r ./requirements.txt
 - npm install
