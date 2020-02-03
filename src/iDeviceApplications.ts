@@ -18,9 +18,16 @@ export class ApplicationItem extends vscode.TreeItem {
 	) {
         super(label, collapsibleState);
         this.tooltip = infoObject[1];
+        this.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'bundle.svg'));
+
+        if (infoObject.length > 3) {
+            let tryImageUri = vscode.Uri.parse(infoObject[3]);
+            if (tryImageUri !== undefined && tryImageUri !== null) {
+                this.iconPath = tryImageUri;
+            }
+        }
     }
 
-    iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'bundle.svg'));
 
     command = {
         title: this.label,
