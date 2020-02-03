@@ -2,6 +2,10 @@
 
 A fast and elegant extension for VSCode used for iOSre projects.
 
+### DONT INSTALL IT FROM VSCODE STORE IT IS BROKEN WITH RESOURCES
+### DONT INSTALL IT FROM VSCODE STORE IT IS BROKEN WITH RESOURCES
+### DONT INSTALL IT FROM VSCODE STORE IT IS BROKEN WITH RESOURCES
+
 ## Suggest Theme
 
 - Huacat Pink Theme
@@ -25,7 +29,7 @@ There are some tools that you need to install on your own listed below.
 ## Installation
 
 - cd $HOME/.vscode/extensions
-- git clone ........................
+- git clone https://lab.qaq.wiki/Lakr233/iOSreExtension.git
 - cd iOSreExtension
 - pip3 install -r ./requirements.txt
 - npm install

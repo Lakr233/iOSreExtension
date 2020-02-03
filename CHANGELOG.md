@@ -1,9 +1,6 @@
-# Change Log
 
-All notable changes to the "wikiqaqiosre" extension will be documented in this file.
+# http://iosre.com/t/vs/16450/
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+### DONT INSTALL IT FROM VSCODE STORE IT IS BROKEN WITH RESOURCES
+### DONT INSTALL IT FROM VSCODE STORE IT IS BROKEN WITH RESOURCES
+### DONT INSTALL IT FROM VSCODE STORE IT IS BROKEN WITH RESOURCES

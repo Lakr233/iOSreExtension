@@ -75,7 +75,6 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
             iDevices.shared.executeOnDevice("killall -SEGV SpringBoard");
             return;
         }
-        vscode.window.showErrorMessage("iOSre -> undefined tool called: " + toolObject.label);
     }
 
 	private _onDidChangeTreeData: vscode.EventEmitter<ToolItem> = new vscode.EventEmitter<ToolItem>();
