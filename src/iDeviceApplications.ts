@@ -172,7 +172,11 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             let readps = iDevices.shared.executeOnDevice("ps -e");
             let processName: string | undefined;
             readps.split("\n").forEach((line) => {
-                if (line.startsWith(String(ApplicationObject.infoObject[2]))) {
+                let dude = line;
+                while (dude.startsWith(" ")) {
+                    dude = dude.substring(1, dude.length);
+                }
+                if (dude.startsWith(String(ApplicationObject.infoObject[2]))) {
                     let sp = line.split("/");
                     let name = sp[sp.length - 1];
                     console.log("[*] Captured name : " + name);
