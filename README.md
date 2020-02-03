@@ -1,6 +1,6 @@
 # wikiqaqiosre README
 
-This is the README for your extension "wikiqaqiosre".
+A fast and elegant extension for VSCode used for iOSre projects.
 
 ## Suggest Theme
 
@@ -13,7 +13,7 @@ This is the development used theme, with all svg image resources used uder the s
 A powerfull tool for iOSre projects.
 
 
-![Hi](images/main.png)
+![Hi](https://github.com/Co2333/iOSreExtension/raw/master/images/main.png)
 
 ## Requirements
 
