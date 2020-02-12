@@ -1,4 +1,4 @@
-# wikiqaqiosre README
+# iOSreExtension README
 
 A fast and elegant extension for VSCode used for iOSre projects.
 
@@ -29,7 +29,17 @@ There are some tools that you need to install on your own listed below.
 ## Installation
 
 - cd $HOME/.vscode/extensions
-- git clone https://lab.qaq.wiki/Lakr233/iOSreExtension.git
+- git clone https://github.com/Co2333/iOSreExtension.git
+- cd iOSreExtension
+- pip3 install -r ./requirements.txt
+- npm install
+- npm run compile
+
+## Update
+
+- cd $HOME/.vscode/extensions
+- rm -rf lakr233.wikiqaqiosre*
+- git clone https://github.com/Co2333/iOSreExtension.git
 - cd iOSreExtension
 - pip3 install -r ./requirements.txt
 - npm install
