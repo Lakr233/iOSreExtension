@@ -1,6 +1,8 @@
-# iOSreExtension README
+# iOSreExtension
 
 A fast and elegant extension for VSCode used for iOSre projects.
+
+# https://marketplace.visualstudio.com/items?itemName=Lakr233.wikiqaqiosre
 
 ## Suggest Theme
 
