@@ -40,7 +40,7 @@ export class ToolItem extends vscode.TreeItem {
 
 export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
 
-    public static tools = ["Copy UDID", "sbreload", "ldrestart", "Safemode"];
+    public static tools = ["Copy UDID", "Copy ECID", "sbreload", "ldrestart", "Safemode"];
     public static nodeProvider: ToolboxNodeProvider;
 
     public static init() {
@@ -58,6 +58,11 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
         if (toolObject.label === "Copy UDID") {
             vscode.window.showInformationMessage("iOSre -> UDID Copied + " + vdev?.udid.substring(0, 8) + "...");
             vscode.env.clipboard.writeText(vdev?.udid);
+            return;
+        }
+        if (toolObject.label === "Copy ECID") {
+            vscode.window.showInformationMessage("iOSre -> ECID Copied + " + vdev?.ecid + "...");
+            vscode.env.clipboard.writeText(vdev?.ecid);
             return;
         }
         if (toolObject.label === "sbreload") {
@@ -96,7 +101,7 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
         }
 
         let ret: Array<ToolItem> = [];
-        ret.push(new ToolItem("-> " + dev.label, "", vscode.TreeItemCollapsibleState.None));
+        ret.push(new ToolItem("SELECTED " + dev.udid.substr(0, 8).toLocaleUpperCase(), "", vscode.TreeItemCollapsibleState.None));
         ToolboxNodeProvider.tools.forEach((str) => {
             ret.push(new ToolItem(str, "", vscode.TreeItemCollapsibleState.None));
         });

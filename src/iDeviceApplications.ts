@@ -207,7 +207,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             let randport = Math.floor(Math.random() * 2000) + 2000;
             iDevices.shared.executeOnDeviceAsync("debugserver localhost:" + String(randport) + " --attach=" + ApplicationObject.infoObject[2] + " &");
             terminal.show();
-            terminal.sendText("echo 'If anything went wrong, make sure to have debugserver and screen installed on your device then restart the app and try again'");
+            terminal.sendText("echo 'If anything went wrong, make sure to have debugserver installed on your iDevice then restart the app and try again'");
             terminal.sendText("iproxy " + String(randport) + " " + String(randport) + " &");
             terminal.sendText("lldb");
             execSync("sleep 3");
@@ -220,6 +220,9 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
 
 	private _onDidChangeTreeData: vscode.EventEmitter<ApplicationItem> = new vscode.EventEmitter<ApplicationItem>();
     readonly onDidChangeTreeData: vscode.Event<ApplicationItem | undefined> = this._onDidChangeTreeData.event;
+
+
+    private treeItemCache: Array<ApplicationItem> = [];
 
     getTreeItem(element: ApplicationItem): vscode.TreeItem {
         return element;
@@ -243,10 +246,12 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             let bid = new ApplicationItem(id, true, [], vscode.TreeItemCollapsibleState.None);
             bid.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'xcode.svg'));
             details.push(bid);
-            let start = new ApplicationItem("- dyld Start", true, [], vscode.TreeItemCollapsibleState.None);
-            start.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'rocket.svg'));
-            start.infoObject = element.infoObject;
-            details.push(start);
+            if (element.label !== "SpringBoard") {
+                let start = new ApplicationItem("- dyld Start", true, [], vscode.TreeItemCollapsibleState.None);
+                start.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'rocket.svg'));
+                start.infoObject = element.infoObject;
+                details.push(start);
+            }
             if (Number(element.infoObject[2]) > 0) {
                 let stop = new ApplicationItem("- Terminate", true, [], vscode.TreeItemCollapsibleState.None);
                 stop.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'terminate.svg'));
@@ -265,11 +270,19 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 lldb.infoObject = element.infoObject;
                 details.push(lldb);
             }
-            let dmp = new ApplicationItem("- Decrypt & Dump", true, [], vscode.TreeItemCollapsibleState.None);
-            dmp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'exchange.svg'));
-            dmp.infoObject = element.infoObject;
-            details.push(dmp);
+            if (element.label !== "SpringBoard") {
+                let dmp = new ApplicationItem("- Decrypt & Dump", true, [], vscode.TreeItemCollapsibleState.None);
+                dmp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'exchange.svg'));
+                dmp.infoObject = element.infoObject;
+                details.push(dmp);
+            }
             return details;
+        }
+
+        if (this.treeItemCache.length > 0) {
+            let copy = this.treeItemCache;
+            this.treeItemCache = [];
+            return copy;
         }
 
         let ret: ApplicationItem[] = [];
@@ -328,8 +341,53 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             const piggy = new ApplicationItem("No Application", false, [], vscode.TreeItemCollapsibleState.None);
             piggy.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'pig.svg'));
             ret.push(piggy);
+            return Promise.resolve(ret);
         }
+
+        this.loadSpringBoard(ret);
+
         return Promise.resolve(ret);
+    }
+
+    async loadSpringBoard(pass: Array<ApplicationItem>) {
+        let ret = pass;
+        let spbInfo = ["SpringBoard", "com.apple.springboard", String(this.getPIDviaProcessName("SpringBoard")),
+                        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB20lEQVQ4T6WSvWsUURTFz3lkhYBBEBZLYWcImBnFaCM2EUlhZSr/gDS2AYm6OxNMBPclgiCpBCsFQdBOCxsx2oiIiu7uENCZGEGws1EUv96RmXFDXLbY6O3eO+f93rmXS/xnMX+/6jcmBuX8hIo3ee1Nlx6yXYsWaEhIewaBCDlBX0l+cXC3CoABFKzZ84MAup7Ei2cdfz37Z0Dbb0SAHpctECbM7LktJahF8864R2UCshJkzbgfIPHnjktuGdA6YJ4COkNqCo7jBSCpRfMyGA5TW+8H6HjRW9FMG6gKpzFR9wHeoHBtAwBye5A1T/cCOl58EtBsmNnRllc/mOv7sqXniRe9FnElTO3lboIdYWpPbQa0/foRylxwcDPk0IhxbsIZcAha+SF9NuAlB14vAKB2BtniTB/A3TCzIy0/nqLTeK4boxdBunin4zVWAHOzTABURa3nw4RTBWC5bURFwmS4Zg+V7QBh1rzaqUVPCNzLd6cwJl79mGC+iU69czAyk0Fm5xI/PpFrQdq83fGiB2Fmj5Z//Km2Fx821IIc3nTvRASQ3pMcBWgA9wniMIjVMLPTfwHywys/OtCb4GO6rbVr9/fq2Dv7Idde+meD/enFpOvbSLCVLdzs/Q0NO9PSniFXWwAAAABJRU5ErkJggg=="];
+        let spb = new ApplicationItem("SpringBoard", false, spbInfo, vscode.TreeItemCollapsibleState.Collapsed);
+        let resort = [spb];
+        ret.forEach((item) => {
+            resort.push(item);
+        });
+        this.treeItemCache = resort;
+        this.refresh();
+    }
+
+    public getPIDviaProcessName(name: String): String {
+        if (name === undefined || name === null) {
+            return "0";
+        }
+        let nameRead: string = name.toLowerCase();
+        let selection = iDevices.shared.getDevice() as iDeviceItem;
+        iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
+        let readps = iDevices.shared.executeOnDevice("ps -e");
+        let processName: string | undefined;
+        let items = readps.split("\n");
+        for (const index in items) {
+            let trimmed = items[index];
+            while (trimmed.endsWith(" ")) {
+                trimmed = trimmed.substr(0, trimmed.length - 1);
+            }
+            while (trimmed.startsWith(" ")) {
+                trimmed = trimmed.substr(1, trimmed.length);
+            }
+            if (trimmed.toLocaleLowerCase().endsWith(nameRead)) {
+                let pidstr = trimmed.split(" ")[0];
+                console.log("[*] -> " + nameRead + " has PID " + pidstr);
+                return pidstr;
+            }
+        }
+        vscode.window.showErrorMessage("iOSre -> SSH Connection Invalid");
+        return "0";
     }
 
 }
