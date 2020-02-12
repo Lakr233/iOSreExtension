@@ -50,12 +50,21 @@ export class LKutils {
     public async python(executable: string, arg: string): Promise<String> {
         var promise = new Promise<String>(resolve => {
             const cp = require('child_process');
-            cp.exec("python3 \'" + executable + "\' " + arg, (err: string, stdout: string, stderr: string) => {
-                if (err) {
-                    vscode.window.showErrorMessage("iOSre -> EXECUTE_PYTHON_ERROR -> stderr:" + stderr + " -> stdout:" + stdout + " -> whenExec:" + executable + " " + arg + "  ==> Install dependency may solve the problem.");
-                }
-                resolve(stdout);
-            });
+            if (executable.startsWith("\'")) {
+                cp.exec("python3 " + executable + " " + arg, (err: string, stdout: string, stderr: string) => {
+                    if (err) {
+                        vscode.window.showErrorMessage("iOSre -> EXECUTE_PYTHON_ERROR -> stderr:" + stderr + " -> stdout:" + stdout + " -> whenExec:" + executable + " " + arg + "  ==> Install dependency may solve the problem.");
+                    }
+                    resolve(stdout);
+                });
+            } else {
+                cp.exec("python3 \'" + executable + "\' " + arg, (err: string, stdout: string, stderr: string) => {
+                    if (err) {
+                        vscode.window.showErrorMessage("iOSre -> EXECUTE_PYTHON_ERROR -> stderr:" + stderr + " -> stdout:" + stdout + " -> whenExec:" + executable + " " + arg + "  ==> Install dependency may solve the problem.");
+                    }
+                    resolve(stdout);
+                });
+            }
         });
         return promise;
     }

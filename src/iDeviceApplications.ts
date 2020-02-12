@@ -6,6 +6,7 @@ import { utils } from 'mocha';
 import { iDeviceItem, iDeviceNodeProvider } from './iDeviceConnections';
 import { openSync, writeFileSync, realpath, read } from 'fs';
 import { execSync } from 'child_process';
+import { LKBootStrap } from './LKBootstrap';
 
 // tslint:disable-next-line: class-name
 export class ApplicationItem extends vscode.TreeItem {
@@ -68,19 +69,19 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
                 writeFileSync(passpath, selection.iSSH_password);
                 terminal.show();
-                let aopen = vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'iOS' ,'open'));
-                let binpath = vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'py3' ,'dump_oem.py'));
+                let aopen = "\'" + LKBootStrap.shared.getBinPath() + "/bins/iOS/open\'"; // vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'iOS' ,'open'));
+                let binpath = "\'" + LKBootStrap.shared.getBinPath() + "/bins/py3/dump_oem.py\'"; // vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'py3' ,'dump_oem.py'));
                 let terminalCommands: Array<string> = [];
                 terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
                 terminalCommands.push("rm -f \'" + passpath + "\'");
                 terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\"");
-                terminalCommands.push("sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -P" + selection.iSSH_mappedPort + " " + aopen.path + " root@127.0.0.1:/bin/");
+                terminalCommands.push("sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -P" + selection.iSSH_mappedPort + " " + aopen + " root@127.0.0.1:/bin/");
                 terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'ldid -S /bin/ &> /dev/null\'");
                 terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 /bin/open " + ApplicationObject.infoObject[1]);
                 terminalCommands.push("mkdir -p ~/Documents/iOSre");
                 terminalCommands.push("rm -rf ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
                 terminalCommands.push("rm -f ~/Documents/iOSre/" + ApplicationObject.infoObject[1] + ".ipa");
-                terminalCommands.push(binpath.path + " " + selection.udid + " " + ApplicationObject.infoObject[1] + " $SSHPASSWORD " + selection.iSSH_mappedPort + " ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
+                terminalCommands.push(binpath + " " + selection.udid + " " + ApplicationObject.infoObject[1] + " $SSHPASSWORD " + selection.iSSH_mappedPort + " ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
                 terminalCommands.push("mkdir ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
                 terminalCommands.push("cd ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
                 terminalCommands.push("unzip ../" + ApplicationObject.infoObject[1] + ".ipa");
@@ -112,12 +113,12 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
             writeFileSync(passpath, selection.iSSH_password);
             terminal.show();
-            let aopen = vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'iOS' ,'open'));
+            let aopen = "\'" + LKBootStrap.shared.getBinPath() + "/bins/iOS/open\'";
             let terminalCommands: Array<string> = [];
             terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
             terminalCommands.push("rm -f \'" + passpath + "\'");
             terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\"");
-            terminalCommands.push("sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -P" + selection.iSSH_mappedPort + " " + aopen.path + " root@127.0.0.1:/bin/");
+            terminalCommands.push("sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -P" + selection.iSSH_mappedPort + " " + aopen + " root@127.0.0.1:/bin/");
             terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'ldid -S /bin/ &> /dev/null\'");
             terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 /bin/open " + ApplicationObject.infoObject[1]);
             let bashScript = "";
@@ -143,7 +144,6 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
             writeFileSync(passpath, selection.iSSH_password);
             terminal.show();
-            let aopen = vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'iOS' ,'open'));
             let terminalCommands: Array<string> = [];
             terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
             terminalCommands.push("rm -f \'" + passpath + "\'");
@@ -187,9 +187,8 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 vscode.window.showErrorMessage("iOSre -> Error obtain executable name: " + ApplicationObject.infoObject[1]);
                 return;
             }
-            let watcherbin = vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'local' ,'idsyslog'));
-            execSync("chmod +x \'" + watcherbin.path + "\'");
-            terminal.sendText("\'" + watcherbin.path + "\' " + selection.udid + " \'" + processName + "\'");
+            let watcherbin = "\'" + LKBootStrap.shared.getBinPath() + "/bins/local/idsyslog\'"; // vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'local' ,'idsyslog'));
+            terminal.sendText("" + watcherbin + " " + selection.udid + " \'" + processName + "\'");
             return;
         }
         if (ApplicationObject.label === "- Debugger > Frida") {
@@ -293,7 +292,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             return Promise.resolve(ret);
         }
 
-        const pyb = vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'py3' ,'lsapps.py')).path;
+        const pyb = "\'" + LKBootStrap.shared.getBinPath() + "/bins/py3/lsapps.py\'"; // vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'py3' ,'lsapps.py')).path;
         let read = await LKutils.shared.python(pyb, iDevices.shared.getDevice()?.udid as string) as String;
 
         let haveApp = false;

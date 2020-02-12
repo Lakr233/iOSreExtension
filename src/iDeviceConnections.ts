@@ -6,6 +6,7 @@ import { ApplicationItem } from './iDeviceApplications';
 import { fstat, writeFileSync, unlink, unlinkSync } from 'fs';
 import { exec, ChildProcess } from 'child_process';
 import { stringify } from 'querystring';
+import { LKBootStrap } from './LKBootstrap';
 
 // tslint:disable-next-line: class-name
 export class iDeviceItem extends vscode.TreeItem {
@@ -171,9 +172,8 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
             return details;
         }
 
-        let lsd = vscode.Uri.file(join(__filename,'..', '..' ,'src', 'bins', 'local', 'lsdevs')).path;
-
-        let read = await LKutils.shared.execute("chmod +x " + lsd + " && " + lsd);
+        let lsd = "\'" + LKBootStrap.shared.getBinPath() + "/bins/local/lsdevs\'"; //vscode.Uri.file(join(__filename,'..', '..' ,'src', 'bins', 'local', 'lsdevs')).path;
+        let read = await LKutils.shared.execute(lsd);
 
         this.deviceInfoList = [];
         read.split("\n").forEach(element => {

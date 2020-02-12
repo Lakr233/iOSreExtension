@@ -6,16 +6,18 @@ import { iDevices } from './iDevices';
 import { LKutils } from './Utils';
 import { readFileSync, mkdirSync } from 'fs';
 import { execSync } from 'child_process';
+import { LKBootStrap } from './LKBootstrap';
 
 export function activate(context: vscode.ExtensionContext) {
 
 	console.log('Bootstraping "wiki.qaq.iosre" extension!');
 
-	LKutils.shared.execute("mkdir -p \'" + context.globalStoragePath + "\'");
+	let cp = context.globalStoragePath;
+	LKutils.shared.execute("mkdir -p \'" + cp + "\'");
 	LKutils.shared.setStoragePath(context.globalStoragePath);
 	let ret = execSync("cd ~ && echo $(pwd)");
 	LKutils.shared.setUserHome(ret.toString());
-
+	LKBootStrap.shared.ensureLocalBins(cp);
 
 	iDeviceNodeProvider.init();
 	ToolboxNodeProvider.init();
