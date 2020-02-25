@@ -115,10 +115,10 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
             writeFileSync(passpath, element.iSSH_password);
             terminal.show();
             // iDevices.executionLock = true;
-            terminal.sendText("export SSHPASSWORD=$(cat \'" + passpath + "\')");
-            terminal.sendText("rm -f \'" + passpath + "\'");
-            terminal.sendText("ssh-keygen -R \"[127.0.0.1]:" + element.iSSH_mappedPort + "\" &> /dev/null");
-            terminal.sendText("sshpass -p $SSHPASSWORD ssh root@127.0.0.1 -oStrictHostKeyChecking=no -p " + element.iSSH_mappedPort);
+            terminal.sendText(" export SSHPASSWORD=$(cat \'" + passpath + "\')");
+            terminal.sendText(" rm -f \'" + passpath + "\'");
+            terminal.sendText(" ssh-keygen -R \"[127.0.0.1]:" + element.iSSH_mappedPort + "\" &> /dev/null");
+            terminal.sendText(" sshpass -p $SSHPASSWORD ssh root@127.0.0.1 -oStrictHostKeyChecking=no -p " + element.iSSH_mappedPort);
             // iDevices.executionLock = false;
             return;
         }

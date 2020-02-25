@@ -59,10 +59,10 @@ export class iDevices {
         let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
         writeFileSync(passpath, selection.iSSH_password);
         let terminalCommands: Array<string> = [];
-        terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
-        terminalCommands.push("rm -f \'" + passpath + "\'");
-        terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
-        terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + String(selection.iSSH_mappedPort) + " root@127.0.0.1 \'" + cmd + "\'");
+        terminalCommands.push(" export SSHPASSWORD=$(cat \'" + passpath + "\')");
+        terminalCommands.push(" rm -f \'" + passpath + "\'");
+        terminalCommands.push(" ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
+        terminalCommands.push(" sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + String(selection.iSSH_mappedPort) + " root@127.0.0.1 \'" + cmd + "\'");
         let bashScript = "";
         let bashpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
         terminalCommands.forEach((cmd) => {
@@ -88,10 +88,10 @@ export class iDevices {
         let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
         writeFileSync(passpath, selection.iSSH_password);
         let terminalCommands: Array<string> = [];
-        terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
-        // terminalCommands.push("rm -f \'" + passpath + "\'");
-        terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
-        terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + String(selection.iSSH_mappedPort) + " root@127.0.0.1 \'" + cmd + "\'");
+        terminalCommands.push(" export SSHPASSWORD=$(cat \'" + passpath + "\')");
+        // terminalCommands.push(" rm -f \'" + passpath + "\'");
+        terminalCommands.push(" ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
+        terminalCommands.push(" sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + String(selection.iSSH_mappedPort) + " root@127.0.0.1 \'" + cmd + "\'");
         let bashScript = "";
         let bashpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
         terminalCommands.forEach((cmd) => {

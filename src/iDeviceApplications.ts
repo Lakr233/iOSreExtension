@@ -75,19 +75,19 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 let aopen = "\'" + LKBootStrap.shared.getBinPath() + "/bins/iOS/open\'"; // vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'iOS' ,'open'));
                 let binpath = "\'" + LKBootStrap.shared.getBinPath() + "/bins/py3/dump_oem.py\'"; // vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'py3' ,'dump_oem.py'));
                 let terminalCommands: Array<string> = [];
-                terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
-                terminalCommands.push("rm -f \'" + passpath + "\'");
-                terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
-                terminalCommands.push("sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -P" + selection.iSSH_mappedPort + " " + aopen + " root@127.0.0.1:/bin/");
-                terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'ldid -S /bin/ &> /dev/null\'");
-                terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 /bin/open " + ApplicationObject.infoObject[1]);
-                terminalCommands.push("mkdir -p ~/Documents/iOSre");
-                terminalCommands.push("rm -rf ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
-                terminalCommands.push("rm -f ~/Documents/iOSre/" + ApplicationObject.infoObject[1] + ".ipa");
+                terminalCommands.push(" export SSHPASSWORD=$(cat \'" + passpath + "\')");
+                terminalCommands.push(" rm -f \'" + passpath + "\'");
+                terminalCommands.push(" ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
+                terminalCommands.push(" sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -P" + selection.iSSH_mappedPort + " " + aopen + " root@127.0.0.1:/bin/");
+                terminalCommands.push(" sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'ldid -S /bin/ &> /dev/null\'");
+                terminalCommands.push(" sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 /bin/open " + ApplicationObject.infoObject[1]);
+                terminalCommands.push(" mkdir -p ~/Documents/iOSre");
+                terminalCommands.push(" rm -rf ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
+                terminalCommands.push(" rm -f ~/Documents/iOSre/" + ApplicationObject.infoObject[1] + ".ipa");
                 terminalCommands.push(binpath + " " + selection.udid + " " + ApplicationObject.infoObject[1] + " $SSHPASSWORD " + selection.iSSH_mappedPort + " ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
-                terminalCommands.push("mkdir ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
-                terminalCommands.push("cd ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
-                terminalCommands.push("unzip ../" + ApplicationObject.infoObject[1] + ".ipa");
+                terminalCommands.push(" mkdir ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
+                terminalCommands.push(" cd ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
+                terminalCommands.push(" unzip ../" + ApplicationObject.infoObject[1] + ".ipa");
                 let bashScript = "";
                 let bashpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
                 terminalCommands.forEach((cmd) => {
@@ -95,7 +95,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                     bashScript += cmd;
                 });
                 writeFileSync(bashpath, bashScript, 'utf8');
-                terminal.sendText("/bin/bash -C \'" + bashpath + "\' && exit");
+                terminal.sendText(" /bin/bash -C \'" + bashpath + "\' && exit");
                 vscode.window.onDidCloseTerminal((isthisone) => {
                     if (isthisone.name === "Decrypt => " + ApplicationObject.infoObject[1]) {
                         vscode.window.showInformationMessage("iOSre -> Decrypt " + ApplicationObject.infoObject[0] + " has finished", "open").then((selection) => {
@@ -118,12 +118,12 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             terminal.show();
             let aopen = "\'" + LKBootStrap.shared.getBinPath() + "/bins/iOS/open\'";
             let terminalCommands: Array<string> = [];
-            terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
-            terminalCommands.push("rm -f \'" + passpath + "\'");
-            terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
-            terminalCommands.push("sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -P" + selection.iSSH_mappedPort + " " + aopen + " root@127.0.0.1:/bin/");
-            terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'ldid -S /bin/ &> /dev/null\'");
-            terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 /bin/open " + ApplicationObject.infoObject[1]);
+            terminalCommands.push(" export SSHPASSWORD=$(cat \'" + passpath + "\')");
+            terminalCommands.push(" rm -f \'" + passpath + "\'");
+            terminalCommands.push(" ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
+            terminalCommands.push(" sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -P" + selection.iSSH_mappedPort + " " + aopen + " root@127.0.0.1:/bin/");
+            terminalCommands.push(" sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'ldid -S /bin/ &> /dev/null\'");
+            terminalCommands.push(" sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 /bin/open " + ApplicationObject.infoObject[1]);
             let bashScript = "";
             let bashpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
             terminalCommands.forEach((cmd) => {
@@ -131,7 +131,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 bashScript += cmd;
             });
             writeFileSync(bashpath, bashScript, 'utf8');
-            terminal.sendText("/bin/bash -C \'" + bashpath + "\' && exit");
+            terminal.sendText(" /bin/bash -C \'" + bashpath + "\' && exit");
             vscode.window.onDidCloseTerminal((isthisone) => {
                 if (isthisone.name === "Starting => " + ApplicationObject.infoObject[1]) {
                     this.refresh();
@@ -148,10 +148,10 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             writeFileSync(passpath, selection.iSSH_password);
             terminal.show();
             let terminalCommands: Array<string> = [];
-            terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
-            terminalCommands.push("rm -f \'" + passpath + "\'");
-            terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\"");
-            terminalCommands.push("sshpass -p $SSHPASSWORD ssh -o StrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 kill -9 " + ApplicationObject.infoObject[2]);
+            terminalCommands.push(" export SSHPASSWORD=$(cat \'" + passpath + "\')");
+            terminalCommands.push(" rm -f \'" + passpath + "\'");
+            terminalCommands.push(" ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\"");
+            terminalCommands.push(" sshpass -p $SSHPASSWORD ssh -o StrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 kill -9 " + ApplicationObject.infoObject[2]);
             let bashScript = "";
             let bashpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
             terminalCommands.forEach((cmd) => {
@@ -159,7 +159,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 bashScript += cmd;
             });
             writeFileSync(bashpath, bashScript, 'utf8');
-            terminal.sendText("/bin/bash -C \'" + bashpath + "\' && exit");
+            terminal.sendText(" /bin/bash -C \'" + bashpath + "\' && exit");
             vscode.window.onDidCloseTerminal((isthisone) => {
                 if (isthisone.name === "Terminate => " + ApplicationObject.infoObject[1]) {
                     this.refresh();
@@ -191,7 +191,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 return;
             }
             let watcherbin = "\'" + LKBootStrap.shared.getBinPath() + "/bins/local/idsyslog\'"; // vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'local' ,'idsyslog'));
-            terminal.sendText("" + watcherbin + " " + selection.udid + " \'" + processName + "\'");
+            terminal.sendText(" " + watcherbin + " " + selection.udid + " \'" + processName + "\'");
             return;
         }
         if (ApplicationObject.label === "- Debugger > Frida") {
@@ -199,7 +199,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
             let terminal = vscode.window.createTerminal("Frida => " + ApplicationObject.infoObject[1]);
             terminal.show();
-            terminal.sendText("frida --device=" + selection.udid + " -p " + ApplicationObject.infoObject[2]);
+            terminal.sendText(" frida --device=" + selection.udid + " -p " + ApplicationObject.infoObject[2]);
             return;
         }
         if (ApplicationObject.label === "- Debugger > lldb") {
@@ -209,11 +209,11 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             let randport = Math.floor(Math.random() * 2000) + 2000;
             iDevices.shared.executeOnDeviceAsync("debugserver localhost:" + String(randport) + " --attach=" + ApplicationObject.infoObject[2] + " &");
             terminal.show();
-            terminal.sendText("echo 'If anything went wrong, make sure to have debugserver installed on your iDevice then restart the app and try again'");
-            terminal.sendText("iproxy " + String(randport) + " " + String(randport) + " &");
-            terminal.sendText("lldb");
+            terminal.sendText(" echo 'If anything went wrong, make sure to have debugserver installed on your iDevice then restart the app and try again'");
+            terminal.sendText(" iproxy " + String(randport) + " " + String(randport) + " &");
+            terminal.sendText(" lldb");
             execSync("sleep 3");
-            terminal.sendText("process connect connect://127.0.0.1:" + String(randport) + "");
+            terminal.sendText(" process connect connect://127.0.0.1:" + String(randport) + "");
             return;
         }
         vscode.env.clipboard.writeText(ApplicationObject.label);
