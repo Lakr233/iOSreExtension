@@ -1,1 +1,7 @@
 # http://iosre.com/t/vs/16450/
+
+### 1.1.2
+
+- Fix problem if your device only allow one ssh session
+- Add "Shutdown All iProxy" and "Add iProxy"
+- Fix a crash if your ssh takes too long to finish jobs.

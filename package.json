@@ -4,7 +4,7 @@
 	"repository": "https://github.com/Co2333/iOSreExtension",
 	"displayName": "iOSre Extension Linker",
 	"description": "A fast and elegant extension for VSCode used for iOSre projects. (READ README BEFORE INSTALL)",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"engines": {
 		"vscode": "^1.41.0"
 	},

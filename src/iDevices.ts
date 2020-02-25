@@ -13,6 +13,8 @@ export class iDevices {
     public static shared: iDevices = new iDevices();
     private selectedDevice: iDeviceDeps.iDeviceItem | null = null;
 
+    // public static executionLock: Boolean = false;
+
     constructor() {
 
     }
@@ -20,6 +22,11 @@ export class iDevices {
     public setDevice(devObject: iDeviceDeps.iDeviceItem | null) {
         if (this.selectedDevice === devObject) {
             console.log("[i] this.selectedDevice === devObject");
+            return;
+        }
+        if (this.selectedDevice?.udid === devObject?.udid) {
+            console.log("[i] this.selectedDevice?.udid === devObject?.udid");
+            return;
         }
         this.selectedDevice = devObject;
         this.reloadDevice();
@@ -54,7 +61,7 @@ export class iDevices {
         let terminalCommands: Array<string> = [];
         terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
         terminalCommands.push("rm -f \'" + passpath + "\'");
-        terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\"");
+        terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
         terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + String(selection.iSSH_mappedPort) + " root@127.0.0.1 \'" + cmd + "\'");
         let bashScript = "";
         let bashpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
@@ -69,10 +76,13 @@ export class iDevices {
     }
 
     public executeOnDeviceAsync(cmd: string): ChildProcess | undefined {
+        // console.log("[W] executeOnDeviceAsync may cause executionLock errors!");
         if (this.selectedDevice === undefined) {
             vscode.window.showErrorMessage("iOSre -> No device selected");
             return;
         }
+        // while (iDevices.executionLock) { }
+        // iDevices.executionLock = true;
         let selection = this.selectedDevice as iDeviceDeps.iDeviceItem;
         iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
         let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
@@ -80,7 +90,7 @@ export class iDevices {
         let terminalCommands: Array<string> = [];
         terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
         // terminalCommands.push("rm -f \'" + passpath + "\'");
-        terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\"");
+        terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
         terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + String(selection.iSSH_mappedPort) + " root@127.0.0.1 \'" + cmd + "\'");
         let bashScript = "";
         let bashpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
@@ -91,6 +101,7 @@ export class iDevices {
         writeFileSync(bashpath, bashScript, 'utf8');
         let realCmd = "/bin/bash -C \'" + bashpath + "\'";
         let executeObject = exec(realCmd);
+        // iDevices.executionLock = false;
         return executeObject;
     }
 

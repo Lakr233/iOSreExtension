@@ -7,6 +7,8 @@ import { iDeviceItem, iDeviceNodeProvider } from './iDeviceConnections';
 import { openSync, writeFileSync, realpath, read } from 'fs';
 import { execSync } from 'child_process';
 import { LKBootStrap } from './LKBootstrap';
+import { setFlagsFromString } from 'v8';
+import { brotliCompressSync } from 'zlib';
 
 // tslint:disable-next-line: class-name
 export class ApplicationItem extends vscode.TreeItem {
@@ -45,6 +47,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
 
     public deviceList: Array<string> = []; // 储存udid
     public static nodeProvider: ApplicationNodeProvider;
+    public static spPIDcache: Number;
 
     public static init() {
         const np = new ApplicationNodeProvider();
@@ -74,7 +77,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 let terminalCommands: Array<string> = [];
                 terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
                 terminalCommands.push("rm -f \'" + passpath + "\'");
-                terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\"");
+                terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
                 terminalCommands.push("sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -P" + selection.iSSH_mappedPort + " " + aopen + " root@127.0.0.1:/bin/");
                 terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'ldid -S /bin/ &> /dev/null\'");
                 terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 /bin/open " + ApplicationObject.infoObject[1]);
@@ -105,7 +108,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             });
             return;
         }
-        if (ApplicationObject.label === "- dyld Start") {
+        if (ApplicationObject.label === "- dyld Start" || ApplicationObject.label === "- Open") {
             let selection = iDevices.shared.getDevice() as iDeviceItem;
             iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
             let terminal = vscode.window.createTerminal("Starting => " + ApplicationObject.infoObject[1]);
@@ -117,7 +120,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             let terminalCommands: Array<string> = [];
             terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
             terminalCommands.push("rm -f \'" + passpath + "\'");
-            terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\"");
+            terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
             terminalCommands.push("sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -P" + selection.iSSH_mappedPort + " " + aopen + " root@127.0.0.1:/bin/");
             terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'ldid -S /bin/ &> /dev/null\'");
             terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 /bin/open " + ApplicationObject.infoObject[1]);
@@ -148,7 +151,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             terminalCommands.push("export SSHPASSWORD=$(cat \'" + passpath + "\')");
             terminalCommands.push("rm -f \'" + passpath + "\'");
             terminalCommands.push("ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\"");
-            terminalCommands.push("sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 kill -9 " + ApplicationObject.infoObject[2]);
+            terminalCommands.push("sshpass -p $SSHPASSWORD ssh -o StrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 kill -9 " + ApplicationObject.infoObject[2]);
             let bashScript = "";
             let bashpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
             terminalCommands.forEach((cmd) => {
@@ -246,10 +249,17 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             bid.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'xcode.svg'));
             details.push(bid);
             if (element.label !== "SpringBoard") {
-                let start = new ApplicationItem("- dyld Start", true, [], vscode.TreeItemCollapsibleState.None);
-                start.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'rocket.svg'));
-                start.infoObject = element.infoObject;
-                details.push(start);
+                if (pid !== "0") {
+                    let start = new ApplicationItem("- Open", true, [], vscode.TreeItemCollapsibleState.None);
+                    start.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'rocket.svg'));
+                    start.infoObject = element.infoObject;
+                    details.push(start);
+                } else {
+                    let start = new ApplicationItem("- dyld Start", true, [], vscode.TreeItemCollapsibleState.None);
+                    start.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'rocket.svg'));
+                    start.infoObject = element.infoObject;
+                    details.push(start);
+                }
             }
             if (Number(element.infoObject[2]) > 0) {
                 let stop = new ApplicationItem("- Terminate", true, [], vscode.TreeItemCollapsibleState.None);
@@ -350,20 +360,42 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
 
     async loadSpringBoard(pass: Array<ApplicationItem>) {
         let ret = pass;
-        let spbInfo = ["SpringBoard", "com.apple.springboard", String(this.getPIDviaProcessName("SpringBoard")),
+        let spbInfo = ["SpringBoard", "com.apple.springboard", "Faild Getting PID",
                         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB20lEQVQ4T6WSvWsUURTFz3lkhYBBEBZLYWcImBnFaCM2EUlhZSr/gDS2AYm6OxNMBPclgiCpBCsFQdBOCxsx2oiIiu7uENCZGEGws1EUv96RmXFDXLbY6O3eO+f93rmXS/xnMX+/6jcmBuX8hIo3ee1Nlx6yXYsWaEhIewaBCDlBX0l+cXC3CoABFKzZ84MAup7Ei2cdfz37Z0Dbb0SAHpctECbM7LktJahF8864R2UCshJkzbgfIPHnjktuGdA6YJ4COkNqCo7jBSCpRfMyGA5TW+8H6HjRW9FMG6gKpzFR9wHeoHBtAwBye5A1T/cCOl58EtBsmNnRllc/mOv7sqXniRe9FnElTO3lboIdYWpPbQa0/foRylxwcDPk0IhxbsIZcAha+SF9NuAlB14vAKB2BtniTB/A3TCzIy0/nqLTeK4boxdBunin4zVWAHOzTABURa3nw4RTBWC5bURFwmS4Zg+V7QBh1rzaqUVPCNzLd6cwJl79mGC+iU69czAyk0Fm5xI/PpFrQdq83fGiB2Fmj5Z//Km2Fx821IIc3nTvRASQ3pMcBWgA9wniMIjVMLPTfwHywys/OtCb4GO6rbVr9/fq2Dv7Idde+meD/enFpOvbSLCVLdzs/Q0NO9PSniFXWwAAAABJRU5ErkJggg=="];
         let spb = new ApplicationItem("SpringBoard", false, spbInfo, vscode.TreeItemCollapsibleState.Collapsed);
         let resort = [spb];
+        let byVal = [spb];
+        byVal = []; // remove sp for a while.
         ret.forEach((item) => {
             resort.push(item);
+            byVal.push(item);
         });
         this.treeItemCache = resort;
+        this.refresh();
+        this.getSpringBoardPIDIfAvailable(byVal);
+    }
+
+    public getSpringBoardPIDIfAvailable(cacheItem: Array<ApplicationItem>) {
+        let str = String(this.getPIDviaProcessName("SpringBoard"));
+        let spbInfo = ["SpringBoard", "com.apple.springboard", str,
+                        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB20lEQVQ4T6WSvWsUURTFz3lkhYBBEBZLYWcImBnFaCM2EUlhZSr/gDS2AYm6OxNMBPclgiCpBCsFQdBOCxsx2oiIiu7uENCZGEGws1EUv96RmXFDXLbY6O3eO+f93rmXS/xnMX+/6jcmBuX8hIo3ee1Nlx6yXYsWaEhIewaBCDlBX0l+cXC3CoABFKzZ84MAup7Ei2cdfz37Z0Dbb0SAHpctECbM7LktJahF8864R2UCshJkzbgfIPHnjktuGdA6YJ4COkNqCo7jBSCpRfMyGA5TW+8H6HjRW9FMG6gKpzFR9wHeoHBtAwBye5A1T/cCOl58EtBsmNnRllc/mOv7sqXniRe9FnElTO3lboIdYWpPbQa0/foRylxwcDPk0IhxbsIZcAha+SF9NuAlB14vAKB2BtniTB/A3TCzIy0/nqLTeK4boxdBunin4zVWAHOzTABURa3nw4RTBWC5bURFwmS4Zg+V7QBh1rzaqUVPCNzLd6cwJl79mGC+iU69czAyk0Fm5xI/PpFrQdq83fGiB2Fmj5Z//Km2Fx821IIc3nTvRASQ3pMcBWgA9wniMIjVMLPTfwHywys/OtCb4GO6rbVr9/fq2Dv7Idde+meD/enFpOvbSLCVLdzs/Q0NO9PSniFXWwAAAABJRU5ErkJggg=="];
+        let spb = new ApplicationItem("SpringBoard", false, spbInfo, vscode.TreeItemCollapsibleState.Collapsed);
+        let sort = [spb];
+        cacheItem.forEach((item) => {
+            sort.push(item);
+        });
+        this.treeItemCache = sort;
         this.refresh();
     }
 
     public getPIDviaProcessName(name: String): String {
         if (name === undefined || name === null) {
             return "0";
+        }
+        let device = iDevices.shared.getDevice();
+        if (device === undefined || iDeviceNodeProvider.iProxyPool[device!.udid] === undefined) {
+            // Do nothing if there is no iProxy instance
+            return "iProxy Required";
         }
         let nameRead: string = name.toLowerCase();
         let selection = iDevices.shared.getDevice() as iDeviceItem;

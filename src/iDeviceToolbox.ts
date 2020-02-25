@@ -3,6 +3,7 @@ import { join } from 'path';
 import { LKutils } from './Utils';
 import { iDevices } from './iDevices';
 import { iDeviceItem, iDeviceNodeProvider } from './iDeviceConnections';
+import { execSync, exec } from 'child_process';
 
 export class ToolItem extends vscode.TreeItem {
 
@@ -22,6 +23,10 @@ export class ToolItem extends vscode.TreeItem {
             return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'reload.svg'));
         } else if (name === "Safemode") {
             return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'safe.svg'));
+        } else if (name === "Shutdown iProxy") {
+            return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'kill.svg'));
+        } else if (name === "Add iProxy") {
+            return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'connect.svg'));
         } else {
             return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'ios.svg'));
         }
@@ -40,7 +45,7 @@ export class ToolItem extends vscode.TreeItem {
 
 export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
 
-    public static tools = ["Copy UDID", "Copy ECID", "sbreload", "ldrestart", "Safemode"];
+    public static tools = ["Copy UDID", "Copy ECID", "sbreload", "ldrestart", "Safemode", "Shutdown iProxy", "Add iProxy"];
     public static nodeProvider: ToolboxNodeProvider;
 
     public static init() {
@@ -78,6 +83,27 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
         if (toolObject.label === "Safemode") {
             iDeviceNodeProvider.nodeProvider.ensureiProxy(vdev);
             iDevices.shared.executeOnDevice("killall -SEGV SpringBoard");
+            return;
+        }
+        if (toolObject.label === "Shutdown iProxy") {
+            Object.keys(iDeviceNodeProvider.iProxyPool).forEach(element => {
+                let child = iDeviceNodeProvider.iProxyPool[element]!;
+                child.kill();
+            });
+            iDeviceNodeProvider.iProxyPool = {};
+            iDeviceNodeProvider.nodeProvider.refresh();
+            LKutils.shared.execute("killall iproxy"); // last thing because if some stderr job will kill over refresh
+            return;
+        }
+        if (toolObject.label === "Add iProxy") {
+            vscode.window.showInputBox({prompt: "Which port to map?"}).then((val => {
+                let port = Number(val);
+                let device = iDevices.shared.getDevice()!;
+                let terminal = vscode.window.createTerminal("iProxy => " + String(port) + device.udid);
+                terminal.show();
+                terminal.sendText("iproxy " + String(port) + " " + String(port) + " " + device.udid);
+                terminal.sendText("exit");
+            }));
             return;
         }
     }

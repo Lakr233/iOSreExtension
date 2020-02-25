@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { join } from 'path';
 import { LKutils } from './Utils';
 import { iDevices } from './iDevices';
-import { ApplicationItem } from './iDeviceApplications';
+import { ApplicationItem, ApplicationNodeProvider } from './iDeviceApplications';
 import { fstat, writeFileSync, unlink, unlinkSync } from 'fs';
 import { exec, ChildProcess } from 'child_process';
 import { stringify } from 'querystring';
@@ -114,11 +114,12 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
             let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
             writeFileSync(passpath, element.iSSH_password);
             terminal.show();
+            // iDevices.executionLock = true;
             terminal.sendText("export SSHPASSWORD=$(cat \'" + passpath + "\')");
             terminal.sendText("rm -f \'" + passpath + "\'");
-            terminal.sendText("ssh-keygen -R \"[127.0.0.1]:" + element.iSSH_mappedPort + "\"");
+            terminal.sendText("ssh-keygen -R \"[127.0.0.1]:" + element.iSSH_mappedPort + "\" &> /dev/null");
             terminal.sendText("sshpass -p $SSHPASSWORD ssh root@127.0.0.1 -oStrictHostKeyChecking=no -p " + element.iSSH_mappedPort);
-            this.refresh();
+            // iDevices.executionLock = false;
             return;
         }
     }
@@ -134,6 +135,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
             });
             iDeviceNodeProvider.iProxyPool[element.udid] = execObject;
             this.refresh();
+            ApplicationNodeProvider.nodeProvider.refresh();
         }
     }
 
