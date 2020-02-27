@@ -286,7 +286,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             return details;
         }
 
-        if (this.treeItemCache) {
+        if (this.treeItemCache.length > 0) {
             let copy = this.treeItemCache;
             this.treeItemCache = [];
             return copy;
@@ -352,7 +352,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
         }
 
 
-        let passCache = ret;
+        let passCache = Object.assign([], ret);
 
         let str = String("Failed Getting PID");
         let spbInfo = ["SpringBoard", "com.apple.springboard", str,
