@@ -5,7 +5,7 @@
 	"displayName": "iOSre Extension Linker",
 	"description": "A fast and elegant extension for VSCode used for iOSre projects. (READ README BEFORE INSTALL)",
 	"license": "SEE LICENSE FILE",
-	"version": "1.1.5",
+	"version": "1.1.6",
     "icon": "images/icon.png",
 	"engines": {
 		"vscode": "^1.41.0"
