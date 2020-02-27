@@ -12,7 +12,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"*"
+		"onView:iosreIDtabSectioniDevices"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -41,14 +41,14 @@
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "iosreIDtabbarEntery",
+					"id": "iosreIDtabbarEntry",
 					"title": "iOSre",
 					"icon": "res/icon.svg"
 				}
 			]
 		},
 		"views": {
-			"iosreIDtabbarEntery": [
+			"iosreIDtabbarEntry": [
 				{
 					"id": "iosreIDtabSectioniDevices",
 					"name": "iDevices",

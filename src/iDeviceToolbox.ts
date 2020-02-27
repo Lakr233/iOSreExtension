@@ -3,7 +3,7 @@ import { join } from 'path';
 import { LKutils } from './Utils';
 import { iDevices } from './iDevices';
 import { iDeviceItem, iDeviceNodeProvider } from './iDeviceConnections';
-import { execSync, exec } from 'child_process';
+
 
 export class ToolItem extends vscode.TreeItem {
 
