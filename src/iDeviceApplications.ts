@@ -2,13 +2,11 @@ import * as vscode from 'vscode';
 import { join } from 'path';
 import { LKutils } from './Utils';
 import { iDevices } from './iDevices';
-import { utils } from 'mocha';
 import { iDeviceItem, iDeviceNodeProvider } from './iDeviceConnections';
-import { openSync, writeFileSync, realpath, read } from 'fs';
+import { writeFileSync } from 'fs';
 import { execSync } from 'child_process';
 import { LKBootStrap } from './LKBootstrap';
-import { setFlagsFromString } from 'v8';
-import { brotliCompressSync } from 'zlib';
+
 
 // tslint:disable-next-line: class-name
 export class ApplicationItem extends vscode.TreeItem {
@@ -47,7 +45,6 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
 
     public deviceList: Array<string> = []; // 储存udid
     public static nodeProvider: ApplicationNodeProvider;
-    public static spPIDcache: Number;
 
     public static init() {
         const np = new ApplicationNodeProvider();
@@ -224,7 +221,6 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
     readonly onDidChangeTreeData: vscode.Event<ApplicationItem | undefined> = this._onDidChangeTreeData.event;
 
 
-    private treeItemCache: Array<ApplicationItem> = [];
 
     getTreeItem(element: ApplicationItem): vscode.TreeItem {
         return element;
@@ -288,11 +284,6 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             return details;
         }
 
-        if (this.treeItemCache.length > 0) {
-            let copy = this.treeItemCache;
-            this.treeItemCache = [];
-            return copy;
-        }
 
         let ret: ApplicationItem[] = [];
         if (iDevices.shared.getDevice() === null) {
@@ -353,40 +344,15 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             return Promise.resolve(ret);
         }
 
-        this.loadSpringBoard(ret);
-
-        return Promise.resolve(ret);
-    }
-
-    async loadSpringBoard(pass: Array<ApplicationItem>) {
-        let ret = pass;
-        let spbInfo = ["SpringBoard", "com.apple.springboard", "Faild Getting PID",
-                        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB20lEQVQ4T6WSvWsUURTFz3lkhYBBEBZLYWcImBnFaCM2EUlhZSr/gDS2AYm6OxNMBPclgiCpBCsFQdBOCxsx2oiIiu7uENCZGEGws1EUv96RmXFDXLbY6O3eO+f93rmXS/xnMX+/6jcmBuX8hIo3ee1Nlx6yXYsWaEhIewaBCDlBX0l+cXC3CoABFKzZ84MAup7Ei2cdfz37Z0Dbb0SAHpctECbM7LktJahF8864R2UCshJkzbgfIPHnjktuGdA6YJ4COkNqCo7jBSCpRfMyGA5TW+8H6HjRW9FMG6gKpzFR9wHeoHBtAwBye5A1T/cCOl58EtBsmNnRllc/mOv7sqXniRe9FnElTO3lboIdYWpPbQa0/foRylxwcDPk0IhxbsIZcAha+SF9NuAlB14vAKB2BtniTB/A3TCzIy0/nqLTeK4boxdBunin4zVWAHOzTABURa3nw4RTBWC5bURFwmS4Zg+V7QBh1rzaqUVPCNzLd6cwJl79mGC+iU69czAyk0Fm5xI/PpFrQdq83fGiB2Fmj5Z//Km2Fx821IIc3nTvRASQ3pMcBWgA9wniMIjVMLPTfwHywys/OtCb4GO6rbVr9/fq2Dv7Idde+meD/enFpOvbSLCVLdzs/Q0NO9PSniFXWwAAAABJRU5ErkJggg=="];
-        let spb = new ApplicationItem("SpringBoard", false, spbInfo, vscode.TreeItemCollapsibleState.Collapsed);
-        let resort = [spb];
-        let byVal = [spb];
-        byVal = []; // remove sp for a while.
-        ret.forEach((item) => {
-            resort.push(item);
-            byVal.push(item);
-        });
-        this.treeItemCache = resort;
-        this.refresh();
-        this.getSpringBoardPIDIfAvailable(byVal);
-    }
-
-    public getSpringBoardPIDIfAvailable(cacheItem: Array<ApplicationItem>) {
         let str = String(this.getPIDviaProcessName("SpringBoard"));
         let spbInfo = ["SpringBoard", "com.apple.springboard", str,
                         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB20lEQVQ4T6WSvWsUURTFz3lkhYBBEBZLYWcImBnFaCM2EUlhZSr/gDS2AYm6OxNMBPclgiCpBCsFQdBOCxsx2oiIiu7uENCZGEGws1EUv96RmXFDXLbY6O3eO+f93rmXS/xnMX+/6jcmBuX8hIo3ee1Nlx6yXYsWaEhIewaBCDlBX0l+cXC3CoABFKzZ84MAup7Ei2cdfz37Z0Dbb0SAHpctECbM7LktJahF8864R2UCshJkzbgfIPHnjktuGdA6YJ4COkNqCo7jBSCpRfMyGA5TW+8H6HjRW9FMG6gKpzFR9wHeoHBtAwBye5A1T/cCOl58EtBsmNnRllc/mOv7sqXniRe9FnElTO3lboIdYWpPbQa0/foRylxwcDPk0IhxbsIZcAha+SF9NuAlB14vAKB2BtniTB/A3TCzIy0/nqLTeK4boxdBunin4zVWAHOzTABURa3nw4RTBWC5bURFwmS4Zg+V7QBh1rzaqUVPCNzLd6cwJl79mGC+iU69czAyk0Fm5xI/PpFrQdq83fGiB2Fmj5Z//Km2Fx821IIc3nTvRASQ3pMcBWgA9wniMIjVMLPTfwHywys/OtCb4GO6rbVr9/fq2Dv7Idde+meD/enFpOvbSLCVLdzs/Q0NO9PSniFXWwAAAABJRU5ErkJggg=="];
         let spb = new ApplicationItem("SpringBoard", false, spbInfo, vscode.TreeItemCollapsibleState.Collapsed);
-        let sort = [spb];
-        cacheItem.forEach((item) => {
-            sort.push(item);
-        });
-        this.treeItemCache = sort;
-        this.refresh();
+        ret.unshift(spb);
+   
+        return Promise.resolve(ret);
     }
+
 
     public getPIDviaProcessName(name: String): String {
         if (name === undefined || name === null) {

@@ -3,9 +3,8 @@ import { join } from 'path';
 import { LKutils } from './Utils';
 import { iDevices } from './iDevices';
 import { ApplicationItem, ApplicationNodeProvider } from './iDeviceApplications';
-import { fstat, writeFileSync, unlink, unlinkSync } from 'fs';
+import { writeFileSync } from 'fs';
 import { exec, ChildProcess } from 'child_process';
-import { stringify } from 'querystring';
 import { LKBootStrap } from './LKBootstrap';
 
 // tslint:disable-next-line: class-name
