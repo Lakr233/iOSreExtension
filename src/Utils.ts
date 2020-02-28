@@ -34,7 +34,7 @@ export class LKutils {
         this.userHome = location;
     }
 
-    public async execute(cmd: string): Promise<String> {
+    public execute(cmd: string): Promise<String> {
         var promise = new Promise<String>(resolve => {
             const cp = require('child_process');
             cp.exec(cmd, (err: string, stdout: string, stderr: string) => {
@@ -47,7 +47,7 @@ export class LKutils {
         return promise;
     }
 
-    public async python(executable: string, arg: string): Promise<String> {
+    public python(executable: string, arg: string): Promise<String> {
         var promise = new Promise<String>(resolve => {
             const cp = require('child_process');
             if (executable.startsWith("\'")) {
