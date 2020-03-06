@@ -294,17 +294,23 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
 
             // ------ INSERT APP DOCUMENT INFO IF EXISTS ------
             let isRefreshSignal = false;
-            if (this.appBundleLocationInfo[element.infoObject[1]] !== undefined ){
-                let bli = new ApplicationItem(this.appBundleLocationInfo[element.infoObject[1]], true, [], vscode.TreeItemCollapsibleState.None);
+            if (element.label === "SpringBoard") {
+                let bli = new ApplicationItem("/System/Library/CoreServices/SpringBoard.app", true, [], vscode.TreeItemCollapsibleState.None);
                 bli.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
                 details.push(bli);
-                isRefreshSignal = true;
-            }
-            if (this.appDocumentLocationInfo[element.infoObject[1]] !== undefined ){
-                let dli = new ApplicationItem(this.appDocumentLocationInfo[element.infoObject[1]], true, [], vscode.TreeItemCollapsibleState.None);
-                dli.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
-                details.push(dli);
-                isRefreshSignal = true;
+            } else {
+                if (this.appBundleLocationInfo[element.infoObject[1]] !== undefined ){
+                    let bli = new ApplicationItem(this.appBundleLocationInfo[element.infoObject[1]], true, [], vscode.TreeItemCollapsibleState.None);
+                    bli.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
+                    details.push(bli);
+                    isRefreshSignal = true;
+                }
+                if (this.appDocumentLocationInfo[element.infoObject[1]] !== undefined ){
+                    let dli = new ApplicationItem(this.appDocumentLocationInfo[element.infoObject[1]], true, [], vscode.TreeItemCollapsibleState.None);
+                    dli.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
+                    details.push(dli);
+                    isRefreshSignal = true;
+                }
             }
 
             if (element.label !== "SpringBoard") {
@@ -347,19 +353,18 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 dmp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'exchange.svg'));
                 dmp.infoObject = element.infoObject;
                 details.push(dmp);
-            }
-
-            if (isRefreshSignal) {
-                let load = new ApplicationItem("- Refresh Path", true, [], vscode.TreeItemCollapsibleState.None);
-                load.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
-                load.infoObject = element.infoObject;
-                details.push(load);
-            } else {
-                let load = new ApplicationItem("- Load Path", true, [], vscode.TreeItemCollapsibleState.None);
-                load.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
-                load.infoObject = element.infoObject;
-                details.push(load);
-            }
+                if (isRefreshSignal) {
+                    let load = new ApplicationItem("- Refresh Path", true, [], vscode.TreeItemCollapsibleState.None);
+                    load.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
+                    load.infoObject = element.infoObject;
+                    details.push(load);
+                } else {
+                    let load = new ApplicationItem("- Load Path", true, [], vscode.TreeItemCollapsibleState.None);
+                    load.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
+                    load.infoObject = element.infoObject;
+                    details.push(load);
+                }
+            } 
 
             return details;
         }
