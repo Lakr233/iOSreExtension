@@ -48,7 +48,7 @@ export class iDevices {
         ApplicationNodeProvider.nodeProvider.refresh();
         ToolboxNodeProvider.nodeProvider.refresh();
     }
-
+    
     public executeOnDevice(cmd: string): string {
         if (this.selectedDevice === undefined) {
             vscode.window.showErrorMessage("iOSre -> No device selected");

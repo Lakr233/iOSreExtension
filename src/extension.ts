@@ -32,7 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	let disposable = vscode.commands.registerCommand('extension.iOSreAction-ShowVersion', () => {
-		vscode.window.showInformationMessage("wiki.qaq.iosre -> Version 0.1");
+		vscode.window.showInformationMessage("wiki.qaq.iosre -> I dont know lol");
 	});
 
 	context.subscriptions.push(disposable);

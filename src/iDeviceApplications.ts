@@ -4,7 +4,7 @@ import { LKutils } from './Utils';
 import { iDevices } from './iDevices';
 import { iDeviceItem, iDeviceNodeProvider } from './iDeviceConnections';
 import { writeFileSync } from 'fs';
-import { execSync } from 'child_process';
+import { execSync, exec } from 'child_process';
 import { LKBootStrap } from './LKBootstrap';
 
 
@@ -28,7 +28,6 @@ export class ApplicationItem extends vscode.TreeItem {
             }
         }
     }
-
 
     command = {
         title: this.label,
@@ -58,8 +57,8 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             return;
         }
         if (ApplicationObject.label === "- Decrypt & Dump") {
-            vscode.window.showInformationMessage("Continue Dump " + ApplicationObject.infoObject[0] + " ?", "Sure", "Cancel").then((str) => {
-                if (str !== "Sure") {
+            vscode.window.showInformationMessage("Continue Dump " + ApplicationObject.infoObject[0] + " ?", "Yes", "No").then((str) => {
+                if (str !== "Yes") {
                     return;
                 }
                 let selection = iDevices.shared.getDevice() as iDeviceItem;
@@ -105,7 +104,30 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             });
             return;
         }
-        if (ApplicationObject.label === "- dyld Start" || ApplicationObject.label === "- Open") {
+        if (ApplicationObject.label === "- dyld Start") {
+            let selection = iDevices.shared.getDevice() as iDeviceItem;
+            let fastSpawn = "\'" + LKBootStrap.shared.getBinPath() + "/bins/py3/fastSpawn.py\'";
+            let args = selection.udid + " " + ApplicationObject.infoObject[1];
+            LKutils.shared.python(fastSpawn, args).then((_) => {
+                this.refresh();
+            });
+            return;
+        }
+        if (ApplicationObject.label === "- Fast Open") {
+            vscode.window.showInformationMessage("Fast open will kill the process, contunie?", "Contunie", "Safe Stop").then((str) => {
+                if (str !== "Contunie") {
+                    return;
+                }
+                let selection = iDevices.shared.getDevice() as iDeviceItem;
+                let fastSpawn = "\'" + LKBootStrap.shared.getBinPath() + "/bins/py3/fastSpawn.py\'";
+                let args = selection.udid + " " + ApplicationObject.infoObject[1];
+                LKutils.shared.python(fastSpawn, args).then((_) => {
+                    this.refresh();
+                });
+            });
+            return;
+        }
+        if (ApplicationObject.label === "- Open") {
             let selection = iDevices.shared.getDevice() as iDeviceItem;
             iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
             let terminal = vscode.window.createTerminal("Starting => " + ApplicationObject.infoObject[1]);
@@ -213,14 +235,35 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             terminal.sendText(" process connect connect://127.0.0.1:" + String(randport) + "");
             return;
         }
+        if (ApplicationObject.label === "- Load Path" || ApplicationObject.label === "- Refresh Path") {
+            vscode.window.showInformationMessage("Load app bundle and document path requires the target app to be run as foreground, otherwise the extension may crash.", "Contunie", "Stop").then((str) => {
+                if (str === "Stop") {
+                    return;
+                }
+                let selection = iDevices.shared.getDevice() as iDeviceItem;
+                let obtainer = "\'" + LKBootStrap.shared.getBinPath() + "/bins/py3/obtainAppLocation.py\'";
+                let cmd = obtainer + " " + selection.udid + " " + ApplicationObject.infoObject[2];
+                let read = execSync(cmd).toString();
+                while (read.endsWith("\n")) {
+                    read = read.substring(0, read.length - 1);
+                }
+                let wrapper = read.split("\n");
+                if (wrapper.length !== 2) {
+                    vscode.window.showErrorMessage("iOSre -> Invalid read back: " + read);
+                    return;
+                }
+                this.appBundleLocationInfo[ApplicationObject.infoObject[1]] = wrapper[0];
+                this.appDocumentLocationInfo[ApplicationObject.infoObject[1]] = wrapper[1];
+                this.refresh();
+            });
+            return;
+        }
         vscode.env.clipboard.writeText(ApplicationObject.label);
         vscode.window.showInformationMessage("Cpoied Item: " + ApplicationObject.label);
     }
 
 	private _onDidChangeTreeData: vscode.EventEmitter<ApplicationItem> = new vscode.EventEmitter<ApplicationItem>();
     readonly onDidChangeTreeData: vscode.Event<ApplicationItem | undefined> = this._onDidChangeTreeData.event;
-
-
 
     getTreeItem(element: ApplicationItem): vscode.TreeItem {
         return element;
@@ -231,6 +274,8 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
     }
 
     private treeItemCache: Array<ApplicationItem> = []; // this is dealing with error when getting SpringBoard PID form device
+    private appBundleLocationInfo: {[key: string]: string} = {};
+    private appDocumentLocationInfo: {[key: string]: string} = {};
 
     async getChildren(element?: ApplicationItem): Promise<ApplicationItem[]> {
 
@@ -246,12 +291,32 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             let bid = new ApplicationItem(id, true, [], vscode.TreeItemCollapsibleState.None);
             bid.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'xcode.svg'));
             details.push(bid);
+
+            // ------ INSERT APP DOCUMENT INFO IF EXISTS ------
+            let isRefreshSignal = false;
+            if (this.appBundleLocationInfo[element.infoObject[1]] !== undefined ){
+                let bli = new ApplicationItem(this.appBundleLocationInfo[element.infoObject[1]], true, [], vscode.TreeItemCollapsibleState.None);
+                bli.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
+                details.push(bli);
+                isRefreshSignal = true;
+            }
+            if (this.appDocumentLocationInfo[element.infoObject[1]] !== undefined ){
+                let dli = new ApplicationItem(this.appDocumentLocationInfo[element.infoObject[1]], true, [], vscode.TreeItemCollapsibleState.None);
+                dli.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
+                details.push(dli);
+                isRefreshSignal = true;
+            }
+
             if (element.label !== "SpringBoard") {
                 if (pid !== "0") {
                     let start = new ApplicationItem("- Open", true, [], vscode.TreeItemCollapsibleState.None);
                     start.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'rocket.svg'));
                     start.infoObject = element.infoObject;
                     details.push(start);
+                    let fa = new ApplicationItem("- Fast Open", true, [], vscode.TreeItemCollapsibleState.None);
+                    fa.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'rocket.svg'));
+                    fa.infoObject = element.infoObject;
+                    details.push(fa);                    
                 } else {
                     let start = new ApplicationItem("- dyld Start", true, [], vscode.TreeItemCollapsibleState.None);
                     start.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'rocket.svg'));
@@ -283,6 +348,19 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 dmp.infoObject = element.infoObject;
                 details.push(dmp);
             }
+
+            if (isRefreshSignal) {
+                let load = new ApplicationItem("- Refresh Path", true, [], vscode.TreeItemCollapsibleState.None);
+                load.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
+                load.infoObject = element.infoObject;
+                details.push(load);
+            } else {
+                let load = new ApplicationItem("- Load Path", true, [], vscode.TreeItemCollapsibleState.None);
+                load.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
+                load.infoObject = element.infoObject;
+                details.push(load);
+            }
+
             return details;
         }
 
