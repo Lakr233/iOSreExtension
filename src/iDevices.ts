@@ -1,19 +1,20 @@
 import * as vscode from 'vscode';
 import * as iDeviceDeps from './iDeviceConnections';
+
+import { LKutils } from './Utils';
+import { ToolboxNodeProvider } from './iDeviceToolbox';
 import { iDeviceNodeProvider } from './iDeviceConnections';
 import { ApplicationNodeProvider } from './iDeviceApplications';
-import { LKutils } from './Utils';
+import { FileSystemNodeProvider, FileItem } from './iDeviceFileSystem';
+
 import { writeFileSync } from 'fs';
 import { execSync, exec, ChildProcess } from 'child_process';
-import { ToolboxNodeProvider } from './iDeviceToolbox';
 
 // tslint:disable-next-line: class-name
 export class iDevices {
 
     public static shared: iDevices = new iDevices();
     private selectedDevice: iDeviceDeps.iDeviceItem | null = null;
-
-    // public static executionLock: Boolean = false;
 
     constructor() {
 
@@ -47,6 +48,7 @@ export class iDevices {
     private reloadDevice() {
         ApplicationNodeProvider.nodeProvider.refresh();
         ToolboxNodeProvider.nodeProvider.refresh();
+        FileSystemNodeProvider.nodeProvider.refresh();
     }
     
     public executeOnDevice(cmd: string): string {

@@ -5,6 +5,8 @@ import { ApplicationNodeProvider } from './iDeviceApplications';
 import { LKutils } from './Utils';
 import { execSync } from 'child_process';
 import { LKBootStrap } from './LKBootstrap';
+import { iDevices } from './iDevices';
+import { FileItem, FileSystemNodeProvider } from './iDeviceFileSystem';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -20,6 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 	iDeviceNodeProvider.init();
 	ToolboxNodeProvider.init();
 	ApplicationNodeProvider.init();
+	FileSystemNodeProvider.init();
 
 	context.subscriptions.push(vscode.commands.registerCommand('iDeviceSelect', (deviceObject) => {
 		iDeviceNodeProvider.nodeProvider.performSelector(deviceObject);

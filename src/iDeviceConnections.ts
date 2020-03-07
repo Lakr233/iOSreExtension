@@ -6,6 +6,7 @@ import { ApplicationItem, ApplicationNodeProvider } from './iDeviceApplications'
 import { writeFileSync } from 'fs';
 import { exec, ChildProcess } from 'child_process';
 import { LKBootStrap } from './LKBootstrap';
+import { FileSystemNodeProvider } from './iDeviceFileSystem';
 
 // tslint:disable-next-line: class-name
 export class iDeviceItem extends vscode.TreeItem {
@@ -135,6 +136,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
             iDeviceNodeProvider.iProxyPool[element.udid] = execObject;
             this.refresh();
             ApplicationNodeProvider.nodeProvider.refresh();
+            FileSystemNodeProvider.nodeProvider.refresh();
         }
     }
 
