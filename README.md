@@ -4,11 +4,20 @@ A fast and elegant extension for VSCode used for iOSre projects.
 
 # [Open In VSC Market Place](https://marketplace.visualstudio.com/items?itemName=Lakr233.wikiqaqiosre)
 
-## Suggest Theme
+## Suggest Packages
 
 - Huacat Pink Theme
 
-This is the development used theme, with all svg image resources used uder the same theme
+    -> This is the development used theme, with all svg image resources used uder the same theme and colorized in.
+
+- [xia0LLDB](https://github.com/4ch12dy/xia0LLDB)
+
+    -> Just try it out
+
+## Contributor
+
+- [@Lakr233](https://twitter.com/Lakr233)
+- [onewayticket255](https://github.com/onewayticket255)
 
 ## Features
 

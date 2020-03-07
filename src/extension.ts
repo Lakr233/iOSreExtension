@@ -33,6 +33,9 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('ApplicationSelected', (AppObject) => {
 		ApplicationNodeProvider.nodeProvider.performSelector(AppObject);
 	}));
+	context.subscriptions.push(vscode.commands.registerCommand('iFileSelected', (FileObject) => {
+		FileSystemNodeProvider.nodeProvider.performSelector(FileObject);
+	}));
 
 	let disposable = vscode.commands.registerCommand('extension.iOSreAction-ShowVersion', () => {
 		vscode.window.showInformationMessage("wiki.qaq.iosre -> I dont know lol");

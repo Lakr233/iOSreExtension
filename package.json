@@ -5,7 +5,7 @@
 	"displayName": "iOSre Extension Linker",
 	"description": "A fast and elegant extension for VSCode used for iOSre projects. (READ README BEFORE INSTALL)",
 	"license": "SEE LICENSE FILE",
-	"version": "1.1.9",
+	"version": "1.2.0",
 	"icon": "images/icon.png",
 	"engines": {
 		"vscode": "^1.41.0"
@@ -45,6 +45,46 @@
 				"icon": {
 					"light": "res/reload.svg",
 					"dark": "res/reload.svg"
+				}
+			},
+			{
+				"command": "iosreIDtabSectionFileSystem.create",
+				"title": "0 - New Folder",
+				"icon": {
+					"light": "res/create.svg",
+					"dark": "res/create.svg"
+				}
+			},
+			{
+				"command": "iosreIDtabSectionFileSystem.download",
+				"title": "1 - Downlaod",
+				"icon": {
+					"light": "res/download.svg",
+					"dark": "res/download.svg"
+				}
+			},
+			{
+				"command": "iosreIDtabSectionFileSystem.upload",
+				"title": "2 - Upload",
+				"icon": {
+					"light": "res/upload.svg",
+					"dark": "res/upload.svg"
+				}
+			},
+			{
+				"command": "iosreIDtabSectionFileSystem.delete",
+				"title": "3 - Delete",
+				"icon": {
+					"light": "res/delete.svg",
+					"dark": "res/delete.svg"
+				}
+			},
+			{
+				"command": "iosreIDtabSectionFileSystem.replace",
+				"title": "4 - Replace",
+				"icon": {
+					"light": "res/exchange.svg",
+					"dark": "res/exchange.svg"
 				}
 			}
 		],
@@ -97,6 +137,33 @@
 					"command": "iosreIDtabSectionFileSystem.refreshEntry",
 					"when": "view == iosreIDtabSectionFileSystem",
 					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "iosreIDtabSectionFileSystem.create",
+					"when": "view == iosreIDtabSectionFileSystem",
+					"group": "inline"
+				},
+				{
+					"command": "iosreIDtabSectionFileSystem.download",
+					"when": "view == iosreIDtabSectionFileSystem",
+					"group": "inline"
+				},
+				{
+					"command": "iosreIDtabSectionFileSystem.upload",
+					"when": "view == iosreIDtabSectionFileSystem",
+					"group": "inline"
+				},
+				{
+					"command": "iosreIDtabSectionFileSystem.delete",
+					"when": "view == iosreIDtabSectionFileSystem",
+					"group": "inline"
+				},
+				{
+					"command": "iosreIDtabSectionFileSystem.replace",
+					"when": "view == iosreIDtabSectionFileSystem",
+					"group": "inline"
 				}
 			]
 		}
