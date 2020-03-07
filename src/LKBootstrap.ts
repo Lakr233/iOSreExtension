@@ -1,6 +1,6 @@
-import { FileChangeType } from "vscode";
-import { LKutils } from "./Utils";
-import { execSync } from "child_process";
+import { execSync } from 'child_process';
+import { writeFileSync } from 'fs';
+const AdmZip = require('adm-zip');
 
 export class LKBootStrap {
 
@@ -24,9 +24,7 @@ export class LKBootStrap {
         // clean scripts
         // execSync("find \'" + location + "/\' -name \'??????*\' -delete &> /dev/null");
 
-        require("fs").writeFileSync(location + "/lkbins.zip", LKBootStrap.binpackcode, "base64");
-
-        var AdmZip = require('adm-zip');
+        writeFileSync(location + "/lkbins.zip", LKBootStrap.binpackcode, "base64");
         this.binloc = location + "/lkbins";
         var zip = new AdmZip(location + "/lkbins.zip");
         // @ts-ignore

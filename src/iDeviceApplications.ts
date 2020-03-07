@@ -6,6 +6,7 @@ import { iDeviceItem, iDeviceNodeProvider } from './iDeviceConnections';
 import { writeFileSync } from 'fs';
 import { execSync, exec } from 'child_process';
 import { LKBootStrap } from './LKBootstrap';
+import { FileSystemNodeProvider} from './iDeviceFileSystem'
 
 
 // tslint:disable-next-line: class-name
@@ -258,6 +259,11 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             });
             return;
         }
+        if (ApplicationObject.label.match("/private/var")){
+            const np = new FileSystemNodeProvider(ApplicationObject.label)
+            vscode.window.registerTreeDataProvider('iosreIDtabSectionFileSystem', np)
+        }
+
         vscode.env.clipboard.writeText(ApplicationObject.label);
         vscode.window.showInformationMessage("Cpoied Item: " + ApplicationObject.label);
     }
@@ -444,7 +450,9 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
         ret.unshift(spb);
    
         this.loadSpringBoard(passCache); // doing it async will prevent any error when sub routine dead
-
+        
+        
+        FileSystemNodeProvider.init();
         return Promise.resolve(ret);
     }
     
