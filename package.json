@@ -2,7 +2,7 @@
 	"name": "wikiqaqiosre",
 	"publisher": "Lakr233",
 	"repository": "https://github.com/Co2333/iOSreExtension",
-	"displayName": "iOSre Extension Linker",
+	"displayName": "iOSre Extension",
 	"description": "A fast and elegant extension for VSCode used for iOSre projects. (READ README BEFORE INSTALL)",
 	"license": "SEE LICENSE FILE",
 	"version": "1.2.1",
