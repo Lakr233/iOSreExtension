@@ -1,5 +1,9 @@
 # http://iosre.com/t/vs/16450/
 
+### 1.2.1
+
+- Support non-frida spawn application
+
 ### 1.2.0
 
 - Integrated file manager based on ssh

@@ -105,7 +105,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             });
             return;
         }
-        if (ApplicationObject.label === "- dyld Start") {
+        if (ApplicationObject.label === "- Frida Spawn") {
             let selection = iDevices.shared.getDevice() as iDeviceItem;
             let fastSpawn = "\'" + LKBootStrap.shared.getBinPath() + "/bins/py3/fastSpawn.py\'";
             let args = selection.udid + " " + ApplicationObject.infoObject[1];
@@ -128,7 +128,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
             });
             return;
         }
-        if (ApplicationObject.label === "- Open") {
+        if (ApplicationObject.label === "- Open" || ApplicationObject.label === "- dyld Start") {
             let selection = iDevices.shared.getDevice() as iDeviceItem;
             iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
             let terminal = vscode.window.createTerminal("Starting => " + ApplicationObject.infoObject[1]);
@@ -337,12 +337,16 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                     let fa = new ApplicationItem("- Fast Open", true, [], vscode.TreeItemCollapsibleState.None);
                     fa.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'rocket.svg'));
                     fa.infoObject = element.infoObject;
-                    details.push(fa);                    
+                    details.push(fa);
                 } else {
                     let start = new ApplicationItem("- dyld Start", true, [], vscode.TreeItemCollapsibleState.None);
                     start.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'rocket.svg'));
                     start.infoObject = element.infoObject;
                     details.push(start);
+                    let fa = new ApplicationItem("- Frida Spawn", true, [], vscode.TreeItemCollapsibleState.None);
+                    fa.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'rocket.svg'));
+                    fa.infoObject = element.infoObject;
+                    details.push(fa);
                 }
             }
             if (Number(element.infoObject[2]) > 0) {
@@ -379,7 +383,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                     load.infoObject = element.infoObject;
                     details.push(load);
                 }
-            } 
+            }
 
             return details;
         }
@@ -457,15 +461,15 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB20lEQVQ4T6WSvWsUURTFz3lkhYBBEBZLYWcImBnFaCM2EUlhZSr/gDS2AYm6OxNMBPclgiCpBCsFQdBOCxsx2oiIiu7uENCZGEGws1EUv96RmXFDXLbY6O3eO+f93rmXS/xnMX+/6jcmBuX8hIo3ee1Nlx6yXYsWaEhIewaBCDlBX0l+cXC3CoABFKzZ84MAup7Ei2cdfz37Z0Dbb0SAHpctECbM7LktJahF8864R2UCshJkzbgfIPHnjktuGdA6YJ4COkNqCo7jBSCpRfMyGA5TW+8H6HjRW9FMG6gKpzFR9wHeoHBtAwBye5A1T/cCOl58EtBsmNnRllc/mOv7sqXniRe9FnElTO3lboIdYWpPbQa0/foRylxwcDPk0IhxbsIZcAha+SF9NuAlB14vAKB2BtniTB/A3TCzIy0/nqLTeK4boxdBunin4zVWAHOzTABURa3nw4RTBWC5bURFwmS4Zg+V7QBh1rzaqUVPCNzLd6cwJl79mGC+iU69czAyk0Fm5xI/PpFrQdq83fGiB2Fmj5Z//Km2Fx821IIc3nTvRASQ3pMcBWgA9wniMIjVMLPTfwHywys/OtCb4GO6rbVr9/fq2Dv7Idde+meD/enFpOvbSLCVLdzs/Q0NO9PSniFXWwAAAABJRU5ErkJggg=="];
         let spb = new ApplicationItem("SpringBoard", false, spbInfo, vscode.TreeItemCollapsibleState.Collapsed);
         ret.unshift(spb);
-   
+
         this.loadSpringBoard(passCache); // doing it async will prevent any error when sub routine dead
-        
+
         // 我淦 你居然在这里藏了一个
         // FileSystemNodeProvider.init();
 
         return Promise.resolve(ret);
     }
-    
+
     async loadSpringBoard(pass: Array<ApplicationItem>) {
         let str = String(this.getPIDviaProcessName("SpringBoard"));
         let spbInfo = ["SpringBoard", "com.apple.springboard", str,
@@ -475,28 +479,28 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
         this.treeItemCache = pass;
         this.refresh(); // if ssh dead in getPIDviaProcessName, this wont be called. other wise, "iProxy Required" still need a refresh
     }
-    
-    /* 
+
+    /*
     Let me explain this refresh call chain again.
 
     When no iProxy available
     -> getChild: Failed Getting PID
-    --> loadSpringBoard: 
+    --> loadSpringBoard:
     ---> getPIDviaProcessName: "iProxy Required"
     ----> trigger refresh {} +
 
     When iProxy exists but device not reachable via ssh
     -> getChild: Failed Getting PID
-    --> loadSpringBoard: 
-    ---> getPIDviaProcessName: DEAD! 
+    --> loadSpringBoard:
+    ---> getPIDviaProcessName: DEAD!
     ----> NO SUB ROUTINE //trigger refresh
 
     When we successfully get them all
     -> getChild: Failed Getting PID
-    --> loadSpringBoard: 
+    --> loadSpringBoard:
     ---> getPIDviaProcessName: "666"
     ----> trigger refresh
-    
+
     */
 
     public getPIDviaProcessName(name: String): String {
@@ -533,4 +537,3 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
     }
 
 }
-
