@@ -1,5 +1,11 @@
 # http://iosre.com/t/vs/16450/
 
+### 1.1.9
+
+- Bug fixes and improvements
+- Add "Obtain App Location" function
+- Update binpack payload
+
 ### 1.1.3
 
 - Prevent history to be record in termianl shared history.
