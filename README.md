@@ -8,11 +8,11 @@ A fast and elegant extension for VSCode used for iOSre projects.
 
 - Huacat Pink Theme
 
-    -> This is the development used theme, with all svg image resources used uder the same theme and colorized in.
+    -> It is used on my vsc so that all svg image resources are used uder the same color
 
 - [xia0LLDB](https://github.com/4ch12dy/xia0LLDB)
 
-    -> Just try it out
+    -> Just do it
 
 ## Contributor
 
@@ -45,7 +45,7 @@ There are some tools that you need to install on your own listed below.
 - npm install
 - npm run compile
 
-!! Manually Install may be replaced by M$ market repack automaticly by vsc
+!! Manually installed package may be replaced by M$ market repack automaticly by vsc
 
 ## Extension Settings
 
