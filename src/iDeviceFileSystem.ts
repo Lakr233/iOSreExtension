@@ -234,17 +234,31 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
 
     // fso stands for File System Operation
     private lastSelected: string = "";
-    public performSelector(fileObect: FileItem) {
-        if (fileObect.label === "Go back to /") {
+    public performSelector(fileObject: FileItem) {
+        if (fileObject.label === "Go back to /") {
             FileSystemNodeProvider.nodeProvider.pushToDir("/");
             return;
         }
-        if (this.lastSelected === fileObect.getpath()) {
-            vscode.window.showInformationMessage("iOSre -> File Path Copied + " + fileObect.getpath().substring(0, 8) + "...");
-            vscode.env.clipboard.writeText(fileObect.getpath());
+        if (this.lastSelected === fileObject.getpath()) {
+            vscode.window.showInformationMessage("iOSre -> File Path Copied + " + fileObject.getpath().substring(0, 8) + "...");
+            vscode.env.clipboard.writeText(fileObject.getpath());
+            if (fileObject.getType() === "f") {
+                let selection = iDevices.shared.getDevice() as iDeviceItem;
+                iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
+                let terminal = vscode.window.createTerminal("preview => " + fileObject.getpath());
+                terminal.show();
+                let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
+                writeFileSync(passpath, selection.iSSH_password);
+                terminal.show();
+                terminal.sendText(" export SSHPASSWORD=$(cat \'" + passpath + "\')");
+                terminal.sendText(" rm -f \'" + passpath + "\'");
+                terminal.sendText(" ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
+                terminal.sendText(`sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p  ${selection.iSSH_mappedPort} root@127.0.0.1  "cat ${fileObject.getpath()}"|code -`);
+                terminal.sendText("exit");
+            }
             return;
         }
-        this.lastSelected = fileObect.getpath();
+        this.lastSelected = fileObject.getpath();
     }
 
     public fso_download(fileObject: FileItem) {
