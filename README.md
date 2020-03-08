@@ -64,4 +64,31 @@ There are some tools that you need to install on your own listed below.
 
 There should be none confuguration hiding away from GUI so go and select that camera then you will find out.
 
+## Road Maps
+
+- [ ] Auto inject dylib to app use mobilesubstrate 
+- [ ] Install Root Application
+- [ ] Install IPA
+- [ ] Sign IPA
+- [ ] Sign binary
+- [ ] Remove signature
+
+- [ ] .xm code auto completion
+- [ ] private framewok header auto dump & import
+- [ ] IOKit auto imort
+- [ ] include headers from dyld
+
+- [ ] None Xcode build system for tweak
+- [ ] None Xcode build system for binary
+- [ ] None Xcode debug system for tweak
+- [ ] None Xcode debug system for binary
+- [ ] None Xcode debug system for root app
+- [ ] Source code level debug
+
+- [ ] Create MSHook Project
+- [ ] Create logos Project
+- [ ] Create Root Application Project
+
+- [ ] A better SFTP client not a wrapper to SSH ls -la
+
 **Enjoy!**
