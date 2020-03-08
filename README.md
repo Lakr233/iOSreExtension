@@ -25,6 +25,19 @@ A powerfull tool for iOSre projects.
 
 ![Hi](https://github.com/Co2333/iOSreExtension/raw/master/images/main.png)
 
+- [x] List iOS devices
+- [x] Save device configurations
+- [x] Multiple devices switcher
+- [x] List apps that installed on the device
+- [x] Get app information
+- [x] Attach debuggers to app
+- [x] Obtain app bundle and document locations
+- [x] Remote open app
+- [x] Remote file manager over ssh
+- [x] Copy device info
+- [x] Small tools 
+- [x] Support remote file editing 
+
 ## Requirements
 
 There are some tools that you need to install on your own listed below.
