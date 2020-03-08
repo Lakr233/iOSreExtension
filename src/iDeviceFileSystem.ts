@@ -6,6 +6,7 @@ import { LKutils } from './Utils';
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 import { writeFileSync } from 'fs';
 import { URL } from 'url';
+import { execFileSync, execSync } from 'child_process';
 
 export class FileItem extends vscode.TreeItem {
 
@@ -234,17 +235,80 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
 
     // fso stands for File System Operation
     private lastSelected: string = "";
-    public performSelector(fileObect: FileItem) {
-        if (fileObect.label === "Go back to /") {
+    public performSelector(fileObject: FileItem) {
+        if (fileObject.label === "Go back to /") {
             FileSystemNodeProvider.nodeProvider.pushToDir("/");
             return;
         }
-        if (this.lastSelected === fileObect.getpath()) {
-            vscode.window.showInformationMessage("iOSre -> File Path Copied + " + fileObect.getpath().substring(0, 8) + "...");
-            vscode.env.clipboard.writeText(fileObect.getpath());
+        if (this.lastSelected === fileObject.getpath() && (fileObject.getType() !== "u")) {
+            vscode.window.showInformationMessage("iOSre -> Copy file/dir path or Open file/dir?", "Cancel", "Open", "Copy Path").then((selection) => {
+                if (selection === "Cancel" || selection === undefined) {
+                    return;
+                }
+                if (selection === "Copy Path") {
+                    vscode.env.clipboard.writeText(fileObject.getpath());
+                    return;
+                }
+                if (fileObject.getType() === "l") {
+                    vscode.window.showWarningMessage("iOSre -> Open file/dir does not support sym links");
+                    return;
+                }
+                // TODO
+                if (fileObject.getType() !== "f") {
+                    vscode.window.showWarningMessage("iOSre -> Open file/dir only support regular file");
+                    return;
+                }
+                // Download to temp dir
+                let sessionID = LKutils.shared.makeid(10);
+                let sessionLocation = LKutils.shared.storagePath + "/" + sessionID;
+                execSync("mkdir -p \"" + sessionLocation + "\"");
+                this._fso_download(fileObject, sessionLocation);
+                // Wait for terminal
+                vscode.window.onDidCloseTerminal((isthisone) => {
+                    let check = "Download => " + fileObject.getpath();
+                    if (isthisone.name === check) {
+                        // Write file info to key pair value key:udid+filepath value:localFilePath
+                        let fullpath = sessionLocation + "/" + fileObject.name;
+                        // Open file send to work space
+                        if (fileObject.getType() === "f") {
+                            let uri: vscode.Uri = vscode.Uri.parse(fullpath);
+                            vscode.workspace.openTextDocument(uri).then((whatisthis) => {
+                                vscode.window.showTextDocument(whatisthis, 1, false).then((_) => {
+                                    // save info if we need to upload it again
+                                    let device = iDevices.shared.getDevice()
+                                    if (device === undefined || device ===  null) {
+                                        return;
+                                    }
+                                    LKutils.shared.saveKeyPairValue(uri.path, device.udid + "|" + fileObject.location);
+                                    vscode.window.showInformationMessage("iOSre -> After editing file, press command + shit + P and type replace to upload changes to iDevices");
+                                });
+                            });
+                        } else if (fileObject.getType() === "d") {
+                            // TODO
+                        }
+                        // Dont forget to resiger command of upload and replace
+                    }
+                });
+
+            });
             return;
         }
-        this.lastSelected = fileObect.getpath();
+        this.lastSelected = fileObject.getpath();
+    }
+
+    public _fso_download(remoteFileObject: FileItem, toLocation: string) {
+        let selection = iDevices.shared.getDevice() as iDeviceItem;
+        iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
+        let terminal = vscode.window.createTerminal("Download => " + remoteFileObject.getpath());
+        terminal.show();
+        let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
+        writeFileSync(passpath, selection.iSSH_password);
+        terminal.show();
+        terminal.sendText(" export SSHPASSWORD=$(cat \'" + passpath + "\')");
+        terminal.sendText(" rm -f \'" + passpath + "\'");
+        terminal.sendText(" ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
+        terminal.sendText(" sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -r -P" + selection.iSSH_mappedPort + " \"root@127.0.0.1:" + remoteFileObject.getpath() + "\" \"" + toLocation + "/\"");
+        terminal.sendText("exit");
     }
 
     public fso_download(fileObject: FileItem) {
@@ -268,18 +332,7 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
             if (path === undefined || path === null || path === "") {
                 return;
             }
-            let selection = iDevices.shared.getDevice() as iDeviceItem;
-            iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
-            let terminal = vscode.window.createTerminal("Download => " + fileObject.getpath());
-            terminal.show();
-            let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
-            writeFileSync(passpath, selection.iSSH_password);
-            terminal.show();
-            terminal.sendText(" export SSHPASSWORD=$(cat \'" + passpath + "\')");
-            terminal.sendText(" rm -f \'" + passpath + "\'");
-            terminal.sendText(" ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
-            terminal.sendText(" sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -r -P" + selection.iSSH_mappedPort + " \"root@127.0.0.1:" + fileObject.getpath() + "\" \"" + path + "/\"");
-            terminal.sendText("exit");
+            this._fso_download(fileObject, path);
         });
 
     }
@@ -342,6 +395,7 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
         });
 
     }
+
     public fso_delete(fileObject: FileItem) {
         let path = fileObject.getpath();
         if (path === undefined || path === "") {
@@ -357,6 +411,26 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
             }
             iDevices.shared.executeOnDevice("rm -rf \"" + path + "\"");
             this.refresh();
+        });
+    }
+
+    public _fso_replace(localFile: string, remoteFileLocationNotWithName: string) {
+        let selection = iDevices.shared.getDevice() as iDeviceItem;
+        iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
+        let terminal = vscode.window.createTerminal("Replace => " + remoteFileLocationNotWithName);
+        terminal.show();
+        let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
+        writeFileSync(passpath, selection.iSSH_password);
+        terminal.show();
+        terminal.sendText(" export SSHPASSWORD=$(cat \'" + passpath + "\')");
+        terminal.sendText(" rm -f \'" + passpath + "\'");
+        terminal.sendText(" ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
+        terminal.sendText(" sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -r -P" + selection.iSSH_mappedPort + " \"" + localFile + "\" \"root@127.0.0.1:" + remoteFileLocationNotWithName + "\"");
+        terminal.sendText(" exit");
+        vscode.window.onDidCloseTerminal((isthisone) => {
+            if (isthisone.name === "Replace => " + remoteFileLocationNotWithName) {
+                FileSystemNodeProvider.nodeProvider.refresh();
+            }
         });
     }
 
@@ -387,23 +461,9 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
             if (uploadpath === undefined || uploadpath === null || uploadpath === "") {
                 return;
             }
-            let selection = iDevices.shared.getDevice() as iDeviceItem;
-            iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
-            let terminal = vscode.window.createTerminal("Replace => " + fileObject.getpath());
-            terminal.show();
-            let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
-            writeFileSync(passpath, selection.iSSH_password);
-            terminal.show();
-            terminal.sendText(" export SSHPASSWORD=$(cat \'" + passpath + "\')");
-            terminal.sendText(" rm -f \'" + passpath + "\'");
-            terminal.sendText(" ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
-            terminal.sendText(" sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -r -P" + selection.iSSH_mappedPort + " \"" + uploadpath + "\" \"root@127.0.0.1:" + fileObject.location + "\"");
-            terminal.sendText(" exit");
-            vscode.window.onDidCloseTerminal((isthisone) => {
-                if (isthisone.name === "Replace => " + fileObject.getpath()) {
-                    FileSystemNodeProvider.nodeProvider.refresh();
-                }
-            });
+
+            this._fso_replace(uploadpath, fileObject.location);
+
         });
 
     }

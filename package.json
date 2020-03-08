@@ -5,7 +5,7 @@
 	"displayName": "iOSre Extension",
 	"description": "A fast and elegant VSCode extension used for iOSre projects. (READ README BEFORE INSTALL)",
 	"license": "SEE LICENSE FILE",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"icon": "images/icon.png",
 	"engines": {
 		"vscode": "^1.41.0"
@@ -22,6 +22,10 @@
 			{
 				"command": "extension.iOSreAction-ShowVersion",
 				"title": "iOSreAction-ShowVersion"
+			},
+			{
+				"command": "extension.iOSreAction-replaceFile",
+				"title": "iOSreAction-Replace Remote File With Curren Opened File"
 			},
 			{
 				"command": "iosreIDtabSectioniDevices.refreshEntry",

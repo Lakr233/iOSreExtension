@@ -1,5 +1,10 @@
 # http://iosre.com/t/vs/16450/
 
+### 1.2.2
+
+- Support remote file editing and upload changes
+- Add command extension.iOSreAction-replaceFile
+
 ### 1.2.1
 
 - Support non-frida spawn application
