@@ -272,16 +272,27 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
                         // Open file send to work space
                         if (fileObject.getType() === "f") {
                             let uri: vscode.Uri = vscode.Uri.parse(fullpath);
-                            vscode.workspace.openTextDocument(uri).then((whatisthis) => {
-                                vscode.window.showTextDocument(whatisthis, 1, false).then((_) => {
-                                    // save info if we need to upload it again
-                                    let device = iDevices.shared.getDevice()
-                                    if (device === undefined || device ===  null) {
-                                        return;
-                                    }
-                                    LKutils.shared.saveKeyPairValue(uri.path, device.udid + "|" + fileObject.location);
-                                    vscode.window.showInformationMessage("iOSre -> After editing file, press command + shit + P and type replace to upload changes to iDevices");
+                            // try {
+                                vscode.workspace.openTextDocument(uri).then((whatisthis) => {
+                                    vscode.window.showTextDocument(whatisthis, 1, true).then((e) => {
+                                        vscode.window.showInformationMessage("iOSre -> After editing file, press command + shit + P and type replace to upload changes to iDevices");
+                                    });
                                 });
+                            // } catch (error) {
+                            //     console.log(error);
+                            // }
+                            // save info if we need to upload it again
+                            let device = iDevices.shared.getDevice();
+                            if (device === undefined || device ===  null) {
+                                return;
+                            }
+                            LKutils.shared.saveKeyPairValue(uri.path, device.udid + "|" + fileObject.location);
+                            vscode.window.showInformationMessage("iOSre -> Does the file open? If not, try to open it with another app", "Open", "Cancel").then((str) => {
+                                if (str === "Open") {
+                                    let terminal = vscode.window.createTerminal("Open => " + uri.path);
+                                    terminal.show();
+                                    terminal.sendText("open \"" + uri.path + "\"");
+                                }
                             });
                         } else if (fileObject.getType() === "d") {
                             // TODO
