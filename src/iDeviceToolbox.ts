@@ -56,17 +56,17 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
 
     public performSelector(toolObject: ToolItem) {
         if (iDevices.shared.getDevice() === null) {
-            vscode.window.showErrorMessage("iOSre -> iDevice not selected");
+            vscode.window.showErrorMessage("iDevice not selected");
             return;
         }
         const vdev = iDevices.shared.getDevice() as iDeviceItem;
         if (toolObject.label === "Copy UDID") {
-            vscode.window.showInformationMessage("iOSre -> UDID Copied + " + vdev?.udid.substring(0, 8) + "...");
+            vscode.window.showInformationMessage("UDID Copied + " + vdev?.udid.substring(0, 8) + "...");
             vscode.env.clipboard.writeText(vdev?.udid);
             return;
         }
         if (toolObject.label === "Copy ECID") {
-            vscode.window.showInformationMessage("iOSre -> ECID Copied + " + vdev?.ecid + "...");
+            vscode.window.showInformationMessage("ECID Copied + " + vdev?.ecid + "...");
             vscode.env.clipboard.writeText(vdev?.ecid);
             return;
         }

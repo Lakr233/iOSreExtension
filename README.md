@@ -25,6 +25,19 @@ A powerfull tool for iOSre projects.
 
 ![Hi](https://github.com/Co2333/iOSreExtension/raw/master/images/main.png)
 
+- [x] List iOS devices
+- [x] Save device configurations
+- [x] Multiple devices switcher
+- [x] List apps that installed on the device
+- [x] Get app information
+- [x] Attach debuggers to app
+- [x] Obtain app bundle and document locations
+- [x] Remote open app
+- [x] Remote file manager over ssh
+- [x] Copy device info
+- [x] Small tools 
+- [x] Support remote file editing 
+
 ## Requirements
 
 There are some tools that you need to install on your own listed below.
@@ -50,5 +63,32 @@ There are some tools that you need to install on your own listed below.
 ## Extension Settings
 
 There should be none confuguration hiding away from GUI so go and select that camera then you will find out.
+
+## Road Maps
+
+- [ ] Auto inject dylib to app use mobilesubstrate 
+- [ ] Install Root Application
+- [ ] Install IPA
+- [ ] Sign IPA
+- [ ] Sign binary
+- [ ] Remove signature
+
+- [ ] .xm code auto completion
+- [ ] private framewok header auto dump & import
+- [ ] IOKit auto imort
+- [ ] include headers from dyld
+
+- [ ] None Xcode build system for tweak
+- [ ] None Xcode build system for binary
+- [ ] None Xcode debug system for tweak
+- [ ] None Xcode debug system for binary
+- [ ] None Xcode debug system for root app
+- [ ] Source code level debug
+
+- [ ] Create MSHook Project
+- [ ] Create logos Project
+- [ ] Create Root Application Project
+
+- [ ] A better SFTP client not a wrapper to SSH ls -la
 
 **Enjoy!**

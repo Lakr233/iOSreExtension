@@ -34,11 +34,11 @@ export class iDevices {
         const vdev = devObject as iDeviceDeps.iDeviceItem;
         if (devObject === null) {
 			console.log("[E] iDevice Selection Invalid");
-			vscode.window.showErrorMessage("iOSre -> setDevice (null)");
+			vscode.window.showErrorMessage("setDevice (null)");
             return;
         }
 		console.log("[*] User selected device: " + devObject.udid);
-        vscode.window.showInformationMessage("iOSre -> Selected device: " + devObject.udid.substring(0, 16).toUpperCase() + " +");
+        vscode.window.showInformationMessage("Selected device: " + devObject.udid.substring(0, 16).toUpperCase() + " +");
     }
 
     public getDevice(): iDeviceDeps.iDeviceItem | null {
@@ -50,10 +50,10 @@ export class iDevices {
         ToolboxNodeProvider.nodeProvider.refresh();
         FileSystemNodeProvider.nodeProvider.refresh();
     }
-    
+
     public executeOnDevice(cmd: string): string {
         if (this.selectedDevice === undefined) {
-            vscode.window.showErrorMessage("iOSre -> No device selected");
+            vscode.window.showErrorMessage("No device selected");
             return "";
         }
         let selection = this.selectedDevice as iDeviceDeps.iDeviceItem;
@@ -80,7 +80,7 @@ export class iDevices {
     public executeOnDeviceAsync(cmd: string): ChildProcess | undefined {
         // console.log("[W] executeOnDeviceAsync may cause executionLock errors!");
         if (this.selectedDevice === undefined) {
-            vscode.window.showErrorMessage("iOSre -> No device selected");
+            vscode.window.showErrorMessage("No device selected");
             return;
         }
         // while (iDevices.executionLock) { }

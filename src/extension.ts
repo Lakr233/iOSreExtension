@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	let disposable1 = vscode.commands.registerCommand('extension.iOSreAction-ShowVersion', () => {
-		vscode.window.showInformationMessage("wiki.qaq.iosre -> I dont know lol");
+		vscode.window.showInformationMessage("I dont know lol");
 	});
 	context.subscriptions.push(disposable1);
 
@@ -48,14 +48,14 @@ export function activate(context: vscode.ExtensionContext) {
 
 		let path = vscode.window.activeTextEditor?.document.uri.path;
 		if (path === undefined || path === "") {
-			vscode.window.showWarningMessage("iOSre -> No file being opened");
+			vscode.window.showWarningMessage("No file being opened");
 			return;
 		}
 		let blockpath = path;
 
 		let readRecord = LKutils.shared.readKeyPairValue(path);
 		if (readRecord === "" || readRecord === undefined) {
-			vscode.window.showWarningMessage("iOSre -> Could not find record for this file, operation aborted");
+			vscode.window.showWarningMessage("Could not find record for this file, operation aborted");
 			return;
 		}
 
@@ -73,21 +73,21 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		targetLocation = readRecord.substring(terminater + 1, readRecord.length);
 		if (!targetLocation.startsWith("/") || targetLocation === "") {
-			vscode.window.showWarningMessage("iOSre -> Target location " + targetLocation + " invaild, operation aborted");
+			vscode.window.showWarningMessage("Target location " + targetLocation + " invaild, operation aborted");
 			return;
 		}
 		if (iDevices.shared.getDevice()?.udid !== deviceUDID) {
-			vscode.window.showWarningMessage("iOSre -> Selected device mismatch, operation aborted");
+			vscode.window.showWarningMessage("Selected device mismatch, operation aborted");
 			return;
 		}
 
-		vscode.window.showInformationMessage("iOSre -> Upload and replace will save your file first", "Contunie", "Cancel").then((str) => {
+		vscode.window.showInformationMessage("Upload and replace will save your file first", "Contunie", "Cancel").then((str) => {
 			if (str !== "Contunie") {
 				return;
 			}
 			vscode.window.activeTextEditor?.document.save();
 			if (iDevices.shared.getDevice()?.udid !== deviceUDID) {
-				vscode.window.showWarningMessage("iOSre -> Selected device mismatch, operation aborted");
+				vscode.window.showWarningMessage("Selected device mismatch, operation aborted");
 				return;
 			}
 			FileSystemNodeProvider.nodeProvider._fso_replace(blockpath, targetLocation);
