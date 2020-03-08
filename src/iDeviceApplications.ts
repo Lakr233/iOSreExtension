@@ -238,7 +238,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
         }
         if (ApplicationObject.label === "- Load Path" || ApplicationObject.label === "- Refresh Path") {
             vscode.window.showInformationMessage("Load app bundle and document path requires the target app to be run as foreground, otherwise the extension may crash.", "Contunie", "Stop").then((str) => {
-                if (str === "Stop") {
+                if (str === "Stop" || str === undefined) {
                     return;
                 }
                 let selection = iDevices.shared.getDevice() as iDeviceItem;
@@ -261,7 +261,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
         }
         if (ApplicationObject.label.match("/private/var")){
             vscode.window.showInformationMessage("[Push] to file system tab or [Copy] pwd?", "Cancel", "Push", "Copy").then((str) => {
-                if (str === "Cancel") {
+                if (str === "Cancel" || str === undefined) {
                     return;
                 }
                 if (str === "Push") {
