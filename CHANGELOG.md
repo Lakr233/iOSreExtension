@@ -1,5 +1,9 @@
 # http://iosre.com/t/vs/16450/
 
+### 1.2.4
+
+- Fixed lldb session failed to attach
+
 ### 1.2.3
 
 - A better solution when vscode doesnt support editing downloaded file

@@ -53,6 +53,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
         this.nodeProvider = np;
     }
 
+    private hasOpenedLLDBSession: {[key: string]: string} = {}; // device + bundleid
     public performSelector(ApplicationObject: ApplicationItem) {
         if (!ApplicationObject.isinSubContext) {
             return;
@@ -224,6 +225,17 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
         }
         if (ApplicationObject.label === "- Debugger > lldb") {
             let selection = iDevices.shared.getDevice() as iDeviceItem;
+            if (this.hasOpenedLLDBSession[selection.udid] === ApplicationObject.infoObject[1]) {
+                vscode.window.showInformationMessage("iOSre -> The lldb session is in creating, are you sure about recreating a new one?", "Contunie", "Cancel").then((str) => {
+                    if (str !== "Contunie") {
+                        return;
+                    }
+                    this.hasOpenedLLDBSession[selection.udid] = "";
+                    this.performSelector(ApplicationObject);
+                });
+                return;
+            }
+            this.hasOpenedLLDBSession[selection.udid] = ApplicationObject.infoObject[1];
             iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
             let terminal = vscode.window.createTerminal("lldb => " + ApplicationObject.infoObject[1]);
             let randport = Math.floor(Math.random() * 2000) + 2000;
