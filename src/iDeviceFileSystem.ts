@@ -241,7 +241,7 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
             return;
         }
         if (this.lastSelected === fileObject.getpath() && (fileObject.getType() !== "u")) {
-            vscode.window.showInformationMessage("iOSre -> Copy file/dir path or Open file/dir?", "Cancel", "Open", "Copy Path").then((selection) => {
+            vscode.window.showInformationMessage("Copy file/dir path or Open file/dir?", "Cancel", "Open", "Copy Path").then((selection) => {
                 if (selection === "Cancel" || selection === undefined) {
                     return;
                 }
@@ -250,12 +250,12 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
                     return;
                 }
                 if (fileObject.getType() === "l") {
-                    vscode.window.showWarningMessage("iOSre -> Open file/dir does not support sym links");
+                    vscode.window.showWarningMessage("Open file/dir does not support sym links");
                     return;
                 }
                 // TODO
                 if (fileObject.getType() !== "f") {
-                    vscode.window.showWarningMessage("iOSre -> Open file/dir only support regular file");
+                    vscode.window.showWarningMessage("Open file/dir only support regular file");
                     return;
                 }
                 // Download to temp dir
@@ -275,7 +275,7 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
                             // try {
                                 vscode.workspace.openTextDocument(uri).then((whatisthis) => {
                                     vscode.window.showTextDocument(whatisthis, 1, true).then((e) => {
-                                        vscode.window.showInformationMessage("iOSre -> After editing file, press command + shit + P and type replace to upload changes to iDevices");
+                                        vscode.window.showInformationMessage("After editing file, press command + shit + P and type replace to upload changes to iDevices");
                                     });
                                 });
                             // } catch (error) {
@@ -287,7 +287,7 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
                                 return;
                             }
                             LKutils.shared.saveKeyPairValue(uri.path, device.udid + "|" + fileObject.location);
-                            vscode.window.showInformationMessage("iOSre -> Does the file open? If not, try to open it with another app", "Open", "Cancel").then((str) => {
+                            vscode.window.showInformationMessage("Does the file open? If not, try to open it with another app", "Open", "Cancel").then((str) => {
                                 if (str === "Open") {
                                     let terminal = vscode.window.createTerminal("Open => " + uri.path);
                                     terminal.show();
@@ -353,7 +353,7 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
             return;
         }
         if (fileObject.getType() !== "d") {
-            vscode.window.showWarningMessage("iOSre -> Upload only available for directories");
+            vscode.window.showWarningMessage("Upload only available for directories");
             return;
         }
         const options: vscode.OpenDialogOptions = {
@@ -413,7 +413,7 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
             return;
         }
         if (FileSystemNodeProvider.vetoList.includes(path)) {
-            vscode.window.showWarningMessage("iOSre -> This file is protected or required by system: " + path);
+            vscode.window.showWarningMessage("This file is protected or required by system: " + path);
             return;
         }
         vscode.window.showInformationMessage("Are you sure? The delete operation can not be undo on: " + path, "Contunie", "Stop").then((str) => {
@@ -451,7 +451,7 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
             return;
         }
         if (FileSystemNodeProvider.vetoList.includes(path)) {
-            vscode.window.showWarningMessage("iOSre -> This file is protected or required by system: " + path);
+            vscode.window.showWarningMessage("This file is protected or required by system: " + path);
             return;
         }
         const options: vscode.OpenDialogOptions = {
@@ -484,7 +484,7 @@ export class FileSystemNodeProvider implements vscode.TreeDataProvider<FileItem>
             return;
         }
         if (fileObject.getType() !== "d") {
-            vscode.window.showWarningMessage("iOSre -> Create new folder only available under directories");
+            vscode.window.showWarningMessage("Create new folder only available under directories");
             return;
         }
         vscode.window.showInputBox({prompt: "New folder's name here, press ESC to cancel."}).then((val => {

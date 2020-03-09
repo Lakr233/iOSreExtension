@@ -96,7 +96,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 terminal.sendText(" /bin/bash -C \'" + bashpath + "\' && exit");
                 vscode.window.onDidCloseTerminal((isthisone) => {
                     if (isthisone.name === "Decrypt => " + ApplicationObject.infoObject[1]) {
-                        vscode.window.showInformationMessage("iOSre -> Decrypt " + ApplicationObject.infoObject[0] + " has finished", "open").then((selection) => {
+                        vscode.window.showInformationMessage("Decrypt " + ApplicationObject.infoObject[0] + " has finished", "open").then((selection) => {
                             if (selection === "open") {
                                 LKutils.shared.execute("open ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
                             }
@@ -208,7 +208,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 }
             });
             if (processName === undefined) {
-                vscode.window.showErrorMessage("iOSre -> Error obtain executable name: " + ApplicationObject.infoObject[1]);
+                vscode.window.showErrorMessage("Error obtain executable name: " + ApplicationObject.infoObject[1]);
                 return;
             }
             let watcherbin = "\'" + LKBootStrap.shared.getBinPath() + "/bins/local/idsyslog\'"; // vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'local' ,'idsyslog'));
@@ -226,7 +226,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
         if (ApplicationObject.label === "- Debugger > lldb") {
             let selection = iDevices.shared.getDevice() as iDeviceItem;
             if (this.hasOpenedLLDBSession[selection.udid] === ApplicationObject.infoObject[1]) {
-                vscode.window.showInformationMessage("iOSre -> The lldb session is in creating, are you sure about recreating a new one?", "Contunie", "Cancel").then((str) => {
+                vscode.window.showInformationMessage("The lldb session is in creating, are you sure about recreating a new one?", "Contunie", "Cancel").then((str) => {
                     if (str !== "Contunie") {
                         return;
                     }
@@ -262,7 +262,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 }
                 let wrapper = read.split("\n");
                 if (wrapper.length !== 2) {
-                    vscode.window.showErrorMessage("iOSre -> Invalid read back: " + read);
+                    vscode.window.showErrorMessage("Invalid read back: " + read);
                     return;
                 }
                 this.appBundleLocationInfo[ApplicationObject.infoObject[1]] = wrapper[0];
@@ -544,7 +544,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 return pidstr;
             }
         }
-        vscode.window.showErrorMessage("iOSre -> SSH Connection Invalid");
+        vscode.window.showErrorMessage("SSH Connection Invalid");
         return "0";
     }
 

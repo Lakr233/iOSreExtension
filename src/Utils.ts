@@ -12,12 +12,12 @@ export class LKutils {
     public setStoragePath(location: string | undefined) {
         console.log("[i] setStoragePath called with: " + location);
         if (this.storagePath !== undefined) {
-            vscode.window.showErrorMessage("iOSre -> storagePath Already Exists");
+            vscode.window.showErrorMessage("storagePath Already Exists");
             return;
         }
         if (location === undefined) {
             if (this.userHome === undefined) {
-                vscode.window.showErrorMessage("iOSre -> No where to save docs");
+                vscode.window.showErrorMessage("No where to save docs");
             }
             this.storagePath = (this.userHome as string) + "/iOSre";
             return;
@@ -28,7 +28,7 @@ export class LKutils {
     public setUserHome(location: string) {
         console.log("[i] setUserHome called with: " + location);
         if (this.userHome !== undefined) {
-            vscode.window.showErrorMessage("iOSre -> userHome Already Exists");
+            vscode.window.showErrorMessage("userHome Already Exists");
             return;
         }
         this.userHome = location;
@@ -39,7 +39,7 @@ export class LKutils {
             const cp = require('child_process');
             cp.exec(cmd, (err: string, stdout: string, stderr: string) => {
                 if (err) {
-                    vscode.window.showErrorMessage("iOSre -> EXECUTE_COMMAND_ERROR -> stderr:" + stderr + " -> stdout:" + stdout + " -> whenExec:" + cmd + "  ==> Install dependency may solve the problem.");
+                    vscode.window.showErrorMessage("EXECUTE_COMMAND_ERROR -> stderr:" + stderr + " -> stdout:" + stdout + " -> whenExec:" + cmd + "  ==> Install dependency may solve the problem.");
                 }
                 resolve(stdout);
             });
@@ -53,14 +53,14 @@ export class LKutils {
             if (executable.startsWith("\'")) {
                 cp.exec("python3 " + executable + " " + arg, (err: string, stdout: string, stderr: string) => {
                     if (err) {
-                        vscode.window.showErrorMessage("iOSre -> EXECUTE_PYTHON_ERROR -> stderr:" + stderr + " -> stdout:" + stdout + " -> whenExec:" + executable + " " + arg + "  ==> Install dependency may solve the problem.");
+                        vscode.window.showErrorMessage("EXECUTE_PYTHON_ERROR -> stderr:" + stderr + " -> stdout:" + stdout + " -> whenExec:" + executable + " " + arg + "  ==> Install dependency may solve the problem.");
                     }
                     resolve(stdout);
                 });
             } else {
                 cp.exec("python3 \'" + executable + "\' " + arg, (err: string, stdout: string, stderr: string) => {
                     if (err) {
-                        vscode.window.showErrorMessage("iOSre -> EXECUTE_PYTHON_ERROR -> stderr:" + stderr + " -> stdout:" + stdout + " -> whenExec:" + executable + " " + arg + "  ==> Install dependency may solve the problem.");
+                        vscode.window.showErrorMessage("EXECUTE_PYTHON_ERROR -> stderr:" + stderr + " -> stdout:" + stdout + " -> whenExec:" + executable + " " + arg + "  ==> Install dependency may solve the problem.");
                     }
                     resolve(stdout);
                 });
