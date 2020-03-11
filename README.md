@@ -41,8 +41,10 @@ A powerfull tool for iOSre projects.
 ## Requirements
 
 There are some tools that you need to install on your own listed below.
+
+- Xcode command line tools (required by bins like lsdevs and providing debuggers like lldb)
 - Frida (both macOS & iOS)
-- newest libimobiledevice, iproxy, see Manually Install for instructions.
+- NEWEST libimobiledevice, iproxy, see Manually Install for instructions.
 - sshpass
 - python3 and pip3, with depends at https://github.com/Co2333/iOSreExtension/blob/master/requirements.txt
 
