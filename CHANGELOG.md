@@ -1,5 +1,9 @@
 # http://iosre.com/t/vs/16450/
 
+## 1.2.8
+
+- App files location now cached
+
 ### 1.2.7
 
 - Fixed a bug when loading device config for the first time

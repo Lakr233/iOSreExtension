@@ -267,6 +267,10 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 }
                 this.appBundleLocationInfo[ApplicationObject.infoObject[1]] = wrapper[0];
                 this.appDocumentLocationInfo[ApplicationObject.infoObject[1]] = wrapper[1];
+
+                LKutils.shared.saveKeyPairValue(selection.udid + "|" + ApplicationObject.infoObject[2] + "|bundle", wrapper[0]);
+                LKutils.shared.saveKeyPairValue(selection.udid + "|" + ApplicationObject.infoObject[2] + "|documents", wrapper[1]);
+
                 this.refresh();
             });
             return;
@@ -321,22 +325,38 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
 
             // ------ INSERT APP DOCUMENT INFO IF EXISTS ------
             let isRefreshSignal = false;
-            if (element.label === "SpringBoard") {
-                let bli = new ApplicationItem("/System/Library/CoreServices/SpringBoard.app", true, [], vscode.TreeItemCollapsibleState.None);
-                bli.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
-                details.push(bli);
+            // if (element.label === "SpringBoard") {
+            if (false) {
+                // let bli = new ApplicationItem("/System/Library/CoreServices/SpringBoard.app", true, [], vscode.TreeItemCollapsibleState.None);
+                // bli.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
+                // details.push(bli);
             } else {
-                if (this.appBundleLocationInfo[element.infoObject[1]] !== undefined ){
-                    let bli = new ApplicationItem(this.appBundleLocationInfo[element.infoObject[1]], true, [], vscode.TreeItemCollapsibleState.None);
-                    bli.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
-                    details.push(bli);
-                    isRefreshSignal = true;
-                }
-                if (this.appDocumentLocationInfo[element.infoObject[1]] !== undefined ){
-                    let dli = new ApplicationItem(this.appDocumentLocationInfo[element.infoObject[1]], true, [], vscode.TreeItemCollapsibleState.None);
-                    dli.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
-                    details.push(dli);
-                    isRefreshSignal = true;
+
+                // Load location info from disk
+                let selection = iDevices.shared.getDevice();
+                if (selection !== undefined && selection !== null) {
+                    let bundle = LKutils.shared.readKeyPairValue(selection.udid + "|" + element.infoObject[2] + "|bundle");
+                    let docume = LKutils.shared.readKeyPairValue(selection.udid + "|" + element.infoObject[2] + "|documents");
+
+                    if (bundle !== "") {
+                        this.appBundleLocationInfo[element.infoObject[1]] = bundle;
+                    }
+                    if (docume !== "") {
+                        this.appDocumentLocationInfo[element.infoObject[1]] = docume;
+                    }
+    
+                    if (this.appBundleLocationInfo[element.infoObject[1]] !== undefined){
+                        let bli = new ApplicationItem(this.appBundleLocationInfo[element.infoObject[1]], true, [], vscode.TreeItemCollapsibleState.None);
+                        bli.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
+                        details.push(bli);
+                        isRefreshSignal = true;
+                    }
+                    if (this.appDocumentLocationInfo[element.infoObject[1]] !== undefined){
+                        let dli = new ApplicationItem(this.appDocumentLocationInfo[element.infoObject[1]], true, [], vscode.TreeItemCollapsibleState.None);
+                        dli.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'location.svg'));
+                        details.push(dli);
+                        isRefreshSignal = true;
+                    }
                 }
             }
 
@@ -379,7 +399,8 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 lldb.infoObject = element.infoObject;
                 details.push(lldb);
             }
-            if (element.label !== "SpringBoard") {
+            // if (element.label !== "SpringBoard") {
+            if (true) {
                 let dmp = new ApplicationItem("- Decrypt & Dump", true, [], vscode.TreeItemCollapsibleState.None);
                 dmp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'exchange.svg'));
                 dmp.infoObject = element.infoObject;
@@ -475,9 +496,6 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
         ret.unshift(spb);
 
         this.loadSpringBoard(passCache); // doing it async will prevent any error when sub routine dead
-
-        // 我淦 你居然在这里藏了一个
-        // FileSystemNodeProvider.init();
 
         return Promise.resolve(ret);
     }
