@@ -71,7 +71,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
                 }
                 LKutils.shared.saveKeyPairValue(iDeviceObject.udid + "iSSH_devicePort", String(port));
                 this.refresh();
-                iDevices.shared.reloadDeviceConfig();
+                iDevices.shared.bootstrapDeviceConfig();
             }));
             return;
         }
@@ -83,7 +83,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
                 }
                 LKutils.shared.saveKeyPairValue(iDeviceObject.udid + "iSSH_mappedPort", String(port));
                 this.refresh();
-                iDevices.shared.reloadDeviceConfig();
+                iDevices.shared.bootstrapDeviceConfig();
             }));
             return;
         }
@@ -95,7 +95,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
                 }
                 LKutils.shared.saveKeyPairValue(iDeviceObject.udid + "iSSH_password", pass);
                 this.refresh();
-                iDevices.shared.reloadDeviceConfig();
+                iDevices.shared.bootstrapDeviceConfig();
             }));
             return;
         }
@@ -108,11 +108,11 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
                 delete iDeviceNodeProvider.iProxyPool[element.udid];
             }
             this.refresh();
-            iDevices.shared.reloadDeviceConfig();
+            iDevices.shared.bootstrapDeviceConfig();
             return;
         }
         if (iDeviceObject.label.startsWith("SSH Connect")) {
-            iDevices.shared.reloadDeviceConfig();
+            iDevices.shared.bootstrapDeviceConfig();
             let element = iDeviceObject.father as iDeviceItem;
             this.ensureiProxy(element);
             let terminal = vscode.window.createTerminal("SSH =>" + element.label);
@@ -159,21 +159,41 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
     async getChildren(element?: iDeviceItem): Promise<iDeviceItem[]> {
 
         if (element !== undefined && !(element as iDeviceItem).isinSubContext) {
+
+            let device = element;
+            device.iSSH_devicePort = Number(LKutils.shared.readKeyPairValue(device.udid + "iSSH_devicePort"));
+            device.iSSH_mappedPort = Number(LKutils.shared.readKeyPairValue(device.udid + "iSSH_mappedPort"));
+            device.iSSH_password = LKutils.shared.readKeyPairValue(device.udid + "iSSH_password");
+    
+            // VAILD THIS CONFIG FIRST
+            if (isNaN(device.iSSH_devicePort) || device.iSSH_devicePort < 1 || device.iSSH_devicePort > 65533) {
+                device.iSSH_devicePort = 22;
+                LKutils.shared.saveKeyPairValue(device.udid + "iSSH_devicePort", "22");
+            }
+            if (isNaN(device.iSSH_mappedPort) || device.iSSH_mappedPort < 1 || device.iSSH_mappedPort > 65533) {
+                device.iSSH_mappedPort = 2222;
+                LKutils.shared.saveKeyPairValue(device.udid + "iSSH_mappedPort", "2222");
+            }
+            if (device.iSSH_password === "") {
+                device.iSSH_password = "alpine";
+                LKutils.shared.saveKeyPairValue(device.udid + "iSSH_password", "alpine");
+            }
+
             let details: Array<iDeviceItem> = [];
-            let sshp = new iDeviceItem("Set devicePort: " + element.iSSH_devicePort, element.udid, element.ecid, true, vscode.TreeItemCollapsibleState.None);
+            let sshp = new iDeviceItem("Set devicePort: " + device.iSSH_devicePort, device.udid, device.ecid, true, vscode.TreeItemCollapsibleState.None);
             sshp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'ports.svg'));
             details.push(sshp);
-            let sshpp = new iDeviceItem("Set mappedPort: " + element.iSSH_mappedPort, element.udid, element.ecid, true, vscode.TreeItemCollapsibleState.None);
+            let sshpp = new iDeviceItem("Set mappedPort: " + device.iSSH_mappedPort, device.udid, device.ecid, true, vscode.TreeItemCollapsibleState.None);
             sshpp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'ports.svg'));
             details.push(sshpp);
-            let pass = new iDeviceItem("Set root Password ", element.udid, element.ecid, true, vscode.TreeItemCollapsibleState.None);
+            let pass = new iDeviceItem("Set root Password ", device.udid, device.ecid, true, vscode.TreeItemCollapsibleState.None);
             pass.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'password.svg'));
             details.push(pass);
-            let pp = new iDeviceItem("iProxy: " + element.iSSH_iProxyPID, element.udid, element.ecid, true, vscode.TreeItemCollapsibleState.None);
+            let pp = new iDeviceItem("iProxy: " + device.iSSH_iProxyPID, device.udid, device.ecid, true, vscode.TreeItemCollapsibleState.None);
             pp.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'id.svg'));
             pp.father = element;
             details.push(pp);
-            let ssh = new iDeviceItem("SSH Connect ", element.udid, element.ecid, true, vscode.TreeItemCollapsibleState.None);
+            let ssh = new iDeviceItem("SSH Connect ", device.udid, device.ecid, true, vscode.TreeItemCollapsibleState.None);
             ssh.iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'shell.svg'));
             ssh.father = element;
             details.push(ssh);
@@ -234,24 +254,24 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
                 if (privSelected !== null && (privSelected as iDeviceItem).udid === elements[0]) {
                     foundSelectedDevice = dev;
                 }
-                let readdevport = LKutils.shared.readKeyPairValue(dev.udid + "iSSH_devicePort");
-                if (readdevport === undefined || readdevport === "" || Number(readdevport) < 1) {
-                    dev.iSSH_devicePort = 22;
-                } else {
-                    dev.iSSH_devicePort = Number(readdevport);
-                }
-                let readmapport = LKutils.shared.readKeyPairValue(dev.udid + "iSSH_mappedPort");
-                if (readmapport === undefined || readmapport === "" || Number(readmapport) < 1) {
-                    dev.iSSH_mappedPort = 2222;
-                } else {
-                    dev.iSSH_mappedPort = Number(readmapport);
-                }
-                let password = LKutils.shared.readKeyPairValue(dev.udid + "iSSH_password");
-                if (password === undefined || password === "") {
-                    dev.iSSH_password = password;
-                } else {
-                    dev.iSSH_password = password;
-                }
+                // let readdevport = LKutils.shared.readKeyPairValue(dev.udid + "iSSH_devicePort");
+                // if (readdevport === undefined || readdevport === "" || Number(readdevport) < 1) {
+                //     dev.iSSH_devicePort = 22;
+                // } else {
+                //     dev.iSSH_devicePort = Number(readdevport);
+                // }
+                // let readmapport = LKutils.shared.readKeyPairValue(dev.udid + "iSSH_mappedPort");
+                // if (readmapport === undefined || readmapport === "" || Number(readmapport) < 1) {
+                //     dev.iSSH_mappedPort = 2222;
+                // } else {
+                //     dev.iSSH_mappedPort = Number(readmapport);
+                // }
+                // let password = LKutils.shared.readKeyPairValue(dev.udid + "iSSH_password");
+                // if (password === undefined || password === "") {
+                //     dev.iSSH_password = password;
+                // } else {
+                //     dev.iSSH_password = password;
+                // }
                 if (iDeviceNodeProvider.iProxyPool[dev.udid] !== undefined) {
                     dev.iSSH_iProxyPID = iDeviceNodeProvider.iProxyPool[dev.udid].pid;
                 }
@@ -262,12 +282,15 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
             ret[0].iconPath = vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'pig.svg'));
         } else if (wasADevice === 1) {
             iDevices.shared.setDevice(ret[0]);
+            iDevices.shared.bootstrapDeviceConfig();
         }
         if (foundSelectedDevice === undefined && privSelected !== null) {
             iDevices.shared.setDevice(null);
         } else if (foundSelectedDevice !== undefined) {
             iDevices.shared.setDevice(foundSelectedDevice);
+            iDevices.shared.bootstrapDeviceConfig();
         }
+
         return Promise.resolve(ret);
     }
 
