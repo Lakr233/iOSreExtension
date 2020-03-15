@@ -1,5 +1,10 @@
 # http://iosre.com/t/vs/16450/
 
+### 1.2.5
+
+- Fixed a bug when changing ssh password
+- Make our requirements.txt clean
+
 ### 1.2.4
 
 - Fixed lldb session failed to attach

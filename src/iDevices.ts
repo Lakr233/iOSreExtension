@@ -45,6 +45,17 @@ export class iDevices {
         return this.selectedDevice;
     }
 
+
+    public reloadDeviceConfig() {
+        let device = this.selectedDevice;
+        if (device === undefined || device === null) {
+            return;
+        }
+        device.iSSH_devicePort = Number(LKutils.shared.readKeyPairValue(device.udid + "iSSH_devicePort"));
+        device.iSSH_mappedPort = Number(LKutils.shared.readKeyPairValue(device.udid + "iSSH_mappedPort"));
+        device.iSSH_password = LKutils.shared.readKeyPairValue(device.udid + "iSSH_password");
+    }
+
     private reloadDevice() {
         ApplicationNodeProvider.nodeProvider.refresh();
         ToolboxNodeProvider.nodeProvider.refresh();
