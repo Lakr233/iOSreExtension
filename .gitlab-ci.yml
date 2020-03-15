@@ -1,0 +1,23 @@
+cache:
+  paths:
+    - node_modules/
+
+before_script:
+  - uname -a
+  - whoami
+  - pwd
+  - npm -v
+
+build:
+  artifacts:
+    paths:
+      - artifacts
+  tags:
+    - npm
+  script:
+    - rm -rf artifacts && mkdir artifacts
+    - npm --registry https://registry.npm.taobao.org install
+    - npm --registry https://registry.npm.taobao.org install typescript vsce
+    - npm run compile
+    - node_modules/vsce/out/vsce package -o ./artifacts/
+    - ls -la ./artifacts/

@@ -1,5 +1,17 @@
 # http://iosre.com/t/vs/16450/
 
+## 1.2.10
+
+- Security Update - CVE-2020-7598
+
+## 1.2.9
+
+- Better command name
+
+## 1.2.8
+
+- App files location now cached
+
 ### 1.2.7
 
 - Fixed a bug when loading device config for the first time
