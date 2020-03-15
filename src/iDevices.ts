@@ -27,9 +27,14 @@ export class iDevices {
         }
         if (this.selectedDevice?.udid === devObject?.udid) {
             console.log("[i] this.selectedDevice?.udid === devObject?.udid");
+            this.bootstrapDeviceConfig();
+            return;
+        }
+        if (devObject?.udid === undefined || devObject.udid === null || devObject.udid === "") {
             return;
         }
         this.selectedDevice = devObject;
+        this.bootstrapDeviceConfig();
         this.reloadDevice();
         const vdev = devObject as iDeviceDeps.iDeviceItem;
         if (devObject === null) {
@@ -45,8 +50,7 @@ export class iDevices {
         return this.selectedDevice;
     }
 
-
-    public reloadDeviceConfig() {
+    public bootstrapDeviceConfig() {
         let device = this.selectedDevice;
         if (device === undefined || device === null) {
             return;
@@ -54,6 +58,20 @@ export class iDevices {
         device.iSSH_devicePort = Number(LKutils.shared.readKeyPairValue(device.udid + "iSSH_devicePort"));
         device.iSSH_mappedPort = Number(LKutils.shared.readKeyPairValue(device.udid + "iSSH_mappedPort"));
         device.iSSH_password = LKutils.shared.readKeyPairValue(device.udid + "iSSH_password");
+
+        // VAILD THIS CONFIG FIRST
+        if (isNaN(device.iSSH_devicePort) || device.iSSH_devicePort < 1 || device.iSSH_devicePort > 65533) {
+            device.iSSH_devicePort = 22;
+            LKutils.shared.saveKeyPairValue(device.udid + "iSSH_devicePort", "22");
+        }
+        if (isNaN(device.iSSH_mappedPort) || device.iSSH_mappedPort < 1 || device.iSSH_mappedPort > 65533) {
+            device.iSSH_mappedPort = 2222;
+            LKutils.shared.saveKeyPairValue(device.udid + "iSSH_mappedPort", "2222");
+        }
+        if (device.iSSH_password === "") {
+            device.iSSH_password = "alpine";
+            LKutils.shared.saveKeyPairValue(device.udid + "iSSH_password", "alpine");
+        }
     }
 
     private reloadDevice() {
