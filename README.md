@@ -2,6 +2,10 @@
 
 A fast and elegant extension for VSCode used for iOSre projects.
 
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Co2333/iOSreExtension/pulls)
+[![Platform](https://img.shields.io/badge/Platform-%20macOS%20-brightgreen.svg)](https://github.com/Co2333/iOSreExtension/projects/1)
+
+
 # [Open In VSC Market Place](https://marketplace.visualstudio.com/items?itemName=Lakr233.wikiqaqiosre)
 
 ## Suggest Packages
@@ -41,8 +45,10 @@ A powerfull tool for iOSre projects.
 ## Requirements
 
 There are some tools that you need to install on your own listed below.
+
+- Xcode command line tools (required by bins like lsdevs and providing debuggers like lldb)
 - Frida (both macOS & iOS)
-- newest libimobiledevice, iproxy, see Manually Install for instructions.
+- NEWEST libimobiledevice, iproxy, see Manually Install for instructions.
 - sshpass
 - python3 and pip3, with depends at https://github.com/Co2333/iOSreExtension/blob/master/requirements.txt
 
@@ -66,29 +72,35 @@ There should be none confuguration hiding away from GUI so go and select that ca
 
 ## Road Maps
 
-- [ ] Auto inject dylib to app use mobilesubstrate 
-- [ ] Install Root Application
-- [ ] Install IPA
-- [ ] Sign IPA
-- [ ] Sign binary
-- [ ] Remove signature
-
-- [ ] .xm code auto completion
-- [ ] private framewok header auto dump & import
-- [ ] IOKit auto imort
-- [ ] include headers from dyld
-
-- [ ] None Xcode build system for tweak
-- [ ] None Xcode build system for binary
-- [ ] None Xcode debug system for tweak
-- [ ] None Xcode debug system for binary
-- [ ] None Xcode debug system for root app
-- [ ] Source code level debug
-
-- [ ] Create MSHook Project
-- [ ] Create logos Project
-- [ ] Create Root Application Project
-
-- [ ] A better SFTP client not a wrapper to SSH ls -la
-
+```
+-  Auto inject dylib to app use mobilesubstrate 
+-  Install Root Application
+-  Install IPA
+-  Sign IPA
+-  Sign binary
+-  Remove signature
+  
+  
+-  .xm code auto completion
+-  private framewok header auto dump & import
+-  IOKit auto imort
+-  include headers from dyld
+  
+  
+-  None Xcode build system for tweak
+-  None Xcode build system for binary
+-  None Xcode debug system for tweak
+-  None Xcode debug system for binary
+-  None Xcode debug system for root app
+-  Source code level debug
+  
+  
+-  Create MSHook Project
+-  Create logos Project
+-  Create Root Application Project
+  
+  
+-  A better SFTP client not a wrapper to SSH ls -la
+```
+  
 **Enjoy!**

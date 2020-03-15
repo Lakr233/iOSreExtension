@@ -71,6 +71,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
                 }
                 LKutils.shared.saveKeyPairValue(iDeviceObject.udid + "iSSH_devicePort", String(port));
                 this.refresh();
+                iDevices.shared.reloadDeviceConfig();
             }));
             return;
         }
@@ -82,6 +83,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
                 }
                 LKutils.shared.saveKeyPairValue(iDeviceObject.udid + "iSSH_mappedPort", String(port));
                 this.refresh();
+                iDevices.shared.reloadDeviceConfig();
             }));
             return;
         }
@@ -93,6 +95,7 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
                 }
                 LKutils.shared.saveKeyPairValue(iDeviceObject.udid + "iSSH_password", pass);
                 this.refresh();
+                iDevices.shared.reloadDeviceConfig();
             }));
             return;
         }
@@ -105,9 +108,11 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
                 delete iDeviceNodeProvider.iProxyPool[element.udid];
             }
             this.refresh();
+            iDevices.shared.reloadDeviceConfig();
             return;
         }
         if (iDeviceObject.label.startsWith("SSH Connect")) {
+            iDevices.shared.reloadDeviceConfig();
             let element = iDeviceObject.father as iDeviceItem;
             this.ensureiProxy(element);
             let terminal = vscode.window.createTerminal("SSH =>" + element.label);
