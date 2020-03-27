@@ -5,7 +5,7 @@
 	"displayName": "iOSre Extension",
 	"description": "A fast and elegant VSCode extension used for iOSre projects. (READ README BEFORE INSTALL)",
 	"license": "SEE LICENSE FILE",
-	"version": "1.2.8",
+	"version": "1.2.9",
 	"icon": "images/icon.png",
 	"engines": {
 		"vscode": "^1.43.0"
@@ -21,11 +21,11 @@
 		"commands": [
 			{
 				"command": "extension.iOSreAction-ShowVersion",
-				"title": "iOSreAction-ShowVersion"
+				"title": "iOSre - Action - ShowVersion"
 			},
 			{
 				"command": "extension.iOSreAction-replaceFile",
-				"title": "iOSreAction-Replace Remote File With Curren Opened File"
+				"title": "iOSre - FileCommand - Replace Remote File With Curren Opened File"
 			},
 			{
 				"command": "iosreIDtabSectioniDevices.refreshEntry",
@@ -53,7 +53,7 @@
 			},
 			{
 				"command": "iosreIDtabSectionFileSystem.create",
-				"title": "0 - New Folder",
+				"title": "iOSre - FileCommand - 0 - New Folder",
 				"icon": {
 					"light": "res/create.svg",
 					"dark": "res/create.svg"
@@ -61,7 +61,7 @@
 			},
 			{
 				"command": "iosreIDtabSectionFileSystem.download",
-				"title": "1 - Downlaod",
+				"title": "iOSre - FileCommand - 1 - Downlaod",
 				"icon": {
 					"light": "res/download.svg",
 					"dark": "res/download.svg"
@@ -69,7 +69,7 @@
 			},
 			{
 				"command": "iosreIDtabSectionFileSystem.upload",
-				"title": "2 - Upload",
+				"title": "iOSre - FileCommand - 2 - Upload",
 				"icon": {
 					"light": "res/upload.svg",
 					"dark": "res/upload.svg"
@@ -77,7 +77,7 @@
 			},
 			{
 				"command": "iosreIDtabSectionFileSystem.delete",
-				"title": "3 - Delete",
+				"title": "iOSre - FileCommand - 3 - Delete",
 				"icon": {
 					"light": "res/delete.svg",
 					"dark": "res/delete.svg"
@@ -85,7 +85,7 @@
 			},
 			{
 				"command": "iosreIDtabSectionFileSystem.replace",
-				"title": "4 - Replace",
+				"title": "iOSre - FileCommand - 4 - Replace",
 				"icon": {
 					"light": "res/exchange.svg",
 					"dark": "res/exchange.svg"
