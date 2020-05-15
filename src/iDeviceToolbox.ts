@@ -3,6 +3,8 @@ import { join } from 'path';
 import { LKutils } from './Utils';
 import { iDevices } from './iDevices';
 import { iDeviceItem, iDeviceNodeProvider } from './iDeviceConnections';
+import { writeFileSync } from 'fs';
+import { url } from 'inspector';
 
 
 export class ToolItem extends vscode.TreeItem {
@@ -27,6 +29,8 @@ export class ToolItem extends vscode.TreeItem {
             return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'kill.svg'));
         } else if (name === "Add iProxy") {
             return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'connect.svg'));
+        } else if (name === "Install deb") {
+            return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'package.svg'));
         } else {
             return vscode.Uri.file(join(__filename,'..', '..' ,'res' ,'ios.svg'));
         }
@@ -45,7 +49,7 @@ export class ToolItem extends vscode.TreeItem {
 
 export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
 
-    public static tools = ["Copy UDID", "Copy ECID", "sbreload", "ldrestart", "Safemode", "Shutdown iProxy", "Add iProxy"];
+    public static tools = ["Copy UDID", "Copy ECID", "Install deb", "sbreload", "ldrestart", "Safemode", "Shutdown iProxy", "Add iProxy"];
     public static nodeProvider: ToolboxNodeProvider;
 
     public static init() {
@@ -70,6 +74,47 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
             vscode.env.clipboard.writeText(vdev?.ecid);
             return;
         }
+        if (toolObject.label === "Install deb") {
+            const options: vscode.OpenDialogOptions = {
+                canSelectMany: false,
+                canSelectFolders: false,
+                canSelectFiles: true,
+                openLabel: 'deb pls',
+                filters: {
+                   'DEBIAN Package': ['deb']
+                }
+            };
+            vscode.window.showOpenDialog(options).then((uri) => {
+                if (uri === undefined || uri === null) {
+                    return;
+                }
+                let selection = iDevices.shared.getDevice() as iDeviceItem;
+                iDeviceNodeProvider.nodeProvider.ensureiProxy(selection);
+                let terminal = vscode.window.createTerminal("Install DEB");
+                terminal.show();
+                let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
+                writeFileSync(passpath, selection.iSSH_password);
+                terminal.show();
+                let script = "#!/bin/bash\n";
+                let items = [];
+                items.push(" export SSHPASSWORD=$(cat \'" + passpath + "\')");
+                items.push(" rm -f \'" + passpath + "\'");
+                items.push(" ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
+                items.push(" sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'rm -rf /var/mobile/Media/DEBIAN && mkdir -p /var/mobile/Media/DEBIAN\'");
+                uri.forEach((sel) => {
+                    items.push(" sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -r -P" + selection.iSSH_mappedPort + " \"" + sel.path + "\" \"root@127.0.0.1:/var/mobile/Media/DEBIAN\"");
+                });
+                items.push(" sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'dpkg -i  /var/mobile/Media/DEBIAN/*.deb\'");
+                items.forEach((line) => {
+                    script += line + "\n";
+                });
+                let scriptpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
+                writeFileSync(scriptpath, script);
+                terminal.sendText(" chmod +x \"" + scriptpath + "\"");
+                terminal.sendText(" \"" + scriptpath + "\"");
+            });
+            return;
+        }
         if (toolObject.label === "sbreload") {
             iDeviceNodeProvider.nodeProvider.ensureiProxy(vdev);
             iDevices.shared.executeOnDevice("sbreload");
@@ -77,7 +122,7 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
         }
         if (toolObject.label === "ldrestart") {
             iDeviceNodeProvider.nodeProvider.ensureiProxy(vdev);
-            iDevices.shared.executeOnDevice("ldrestart &");
+            iDevices.shared.executeOnDevice("( ldrestart & )");
             return;
         }
         if (toolObject.label === "Safemode") {

@@ -5,7 +5,7 @@
 	"displayName": "iOSre Extension",
 	"description": "A fast and elegant VSCode extension used for iOSre projects. (READ README BEFORE INSTALL)",
 	"license": "SEE LICENSE FILE",
-	"version": "1.2.10",
+	"version": "1.2.12",
 	"icon": "images/icon.png",
 	"engines": {
 		"vscode": "^1.43.0"
