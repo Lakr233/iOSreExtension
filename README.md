@@ -49,10 +49,10 @@ There are some tools that you need to install on your own listed below. Again, m
 Command line tips are below, remember to download [requirements.txt](./requirements.txt) and install Xcode CLI on your own.
 
 
-- brew uninstall --ignore-dependencies libimobiledevice usbmuxd
-- brew install -v --HEAD --build-from-source usbmuxd libimobiledevice
-- brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb
-- pip3 install -r ./requirements.txt
+- ```brew uninstall --ignore-dependencies libimobiledevice usbmuxd```
+- ```brew install -v --HEAD --build-from-source usbmuxd libimobiledevice```
+- ```brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb```
+- ```pip3 install -r ./requirements.txt```
 
 -> If you want to develop this extension, clone to somewhere else then ~/.vscode otherwise it would be replaced by VSC market place automatically and our binpack would be messed.
 
