@@ -6,65 +6,55 @@ A fast and elegant extension for VSCode used for iOSre projects.
 [![Platform](https://img.shields.io/badge/Platform-%20macOS%20-brightgreen.svg)](https://github.com/Co2333/iOSreExtension/projects/1)
 
 
-# [Open In VSC Market Place](https://marketplace.visualstudio.com/items?itemName=Lakr233.wikiqaqiosre)
+#### [Open In VSC Market Place](https://marketplace.visualstudio.com/items?itemName=Lakr233.wikiqaqiosre)
 
-## Suggest Packages
+## Recommended Packages to Install with
 
 - Huacat Pink Theme
-
-    -> It is used on my vsc so that all svg image resources are used uder the same color
-
 - [xia0LLDB](https://github.com/4ch12dy/xia0LLDB)
-
-    -> Just do it
 
 ## Contributor
 
+Contributor in this project may not show in commit history due to sync wiht my private GitLab instance for CI/CD operations, but will be listed here. 
+
 - [@Lakr233](https://twitter.com/Lakr233)
 - [onewayticket255](https://github.com/onewayticket255)
+- [@Anonymous](https://twitter.com/wang_liangc)
 
 ## Features
 
-A powerfull tool for iOSre projects.
+A powerfull tool for iOSre projects, but must be some tall to ride or you will panic your device running some you dont know shell command. With great power comes great responsibility, just like what we are doing with root/kernel permission. If you really did to panic your deivce, 🎉, navigate to issue tab and lets have a talk.
 
 ![Hi](https://github.com/Co2333/iOSreExtension/raw/master/images/main.png)
 
-- [x] List iOS devices
+- [x] Multiple iOS device management
 - [x] Save device configurations
-- [x] Multiple devices switcher
-- [x] List apps that installed on the device
-- [x] Get app information
-- [x] Attach debuggers to app
-- [x] Obtain app bundle and document locations
-- [x] Remote open app
-- [x] Remote file manager over ssh
-- [x] Copy device info
-- [x] Small tools 
-- [x] Support remote file editing 
+- [x] Applications management - launch, debug, decrypt...
+- [x] Obtain applications information
+- [x] Remote file management over SSH
+- [x] Remote file editing
+- [x] Some useful tools like copy device information, install deb packages...
 
 ## Requirements
 
-There are some tools that you need to install on your own listed below.
+There are some tools that you need to install on your own listed below. Again, must be some tall to ride 🐎.
 
-- Xcode command line tools (required by bins like lsdevs and providing debuggers like lldb)
-- Frida (both macOS & iOS)
-- NEWEST libimobiledevice, iproxy, see Manually Install for instructions.
+- Xcode command line tools (Swift runtime and developer image is required)
+- Frida (both on macOS with pip & iOS with deb package from build.frida.re)
+- NEWEST libimobiledevice, iproxy (installed with brew from source)
 - sshpass
-- python3 and pip3, with depends at https://github.com/Co2333/iOSreExtension/blob/master/requirements.txt
+- python3 and pip3 with requirements located at [requirements.txt](./requirements.txt)
 
-## Manually Install
+
+Command line tips are below, remember to download [requirements.txt](./requirements.txt) and install Xcode CLI on your own.
+
 
 - brew uninstall --ignore-dependencies libimobiledevice usbmuxd
 - brew install -v --HEAD --build-from-source usbmuxd libimobiledevice
 - brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb
-- cd $HOME/.vscode/extensions
-- git clone https://github.com/Co2333/iOSreExtension.git
-- cd iOSreExtension
 - pip3 install -r ./requirements.txt
-- npm install
-- npm run compile
 
-!! Manually installed package may be replaced by M$ market repack automaticly by vsc
+-> If you want to develop this extension, clone to somewhere else then ~/.vscode otherwise it would be replaced by VSC market place automatically and our binpack would be messed.
 
 ## Extension Settings
 
@@ -72,35 +62,6 @@ There should be none confuguration hiding away from GUI so go and select that ca
 
 ## Road Maps
 
-```
--  Auto inject dylib to app use mobilesubstrate 
--  Install Root Application
--  Install IPA
--  Sign IPA
--  Sign binary
--  Remove signature
-  
-  
--  .xm code auto completion
--  private framewok header auto dump & import
--  IOKit auto imort
--  include headers from dyld
-  
-  
--  None Xcode build system for tweak
--  None Xcode build system for binary
--  None Xcode debug system for tweak
--  None Xcode debug system for binary
--  None Xcode debug system for root app
--  Source code level debug
-  
-  
--  Create MSHook Project
--  Create logos Project
--  Create Root Application Project
-  
-  
--  A better SFTP client not a wrapper to SSH ls -la
-```
-  
-**Enjoy!**
+Check out our GitHub Project page for help-wanted features.
+
+2020-05-20 Lakr Aream
