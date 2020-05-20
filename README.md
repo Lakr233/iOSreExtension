@@ -15,7 +15,7 @@ A fast and elegant extension for VSCode used for iOSre projects.
 
 ## Contributor
 
-Contributor in this project may not show in commit history due to sync wiht my private GitLab instance for CI/CD operations, but will be listed here. 
+Contributor in this project may not show in commit history due to sync with my private GitLab instance for CI/CD operations, but will be listed here. 
 
 - [@Lakr233](https://twitter.com/Lakr233)
 - [onewayticket255](https://github.com/onewayticket255)
