@@ -54,6 +54,15 @@ Command line tips are below, remember to download [requirements.txt](./requireme
 - ```brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb```
 - ```pip3 install -r ./requirements.txt```
 
+If you failed to build libimobiledevice or usbmuxd, try to reinstall libplist from source. [Learn More](https://github.com/Co2333/iOSreExtension/issues/10)
+
+- ```git clone https://github.com/libimobiledevice/libplist.git```
+- ```cd libplist```
+- ```./autogen.sh --prefix=/opt/local --without-cython```
+- ```make && sudo make install```
+
+To build libplist, you may want to install Xcode CommandLine Tool first along with some pre-requirements.
+
 -> If you want to develop this extension, clone to somewhere else then ~/.vscode otherwise it would be replaced by VSC market place automatically and our binpack would be messed.
 
 ## Extension Settings
