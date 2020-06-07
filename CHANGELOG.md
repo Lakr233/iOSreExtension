@@ -1,5 +1,10 @@
 # http://iosre.com/t/vs/16450/
 
+## 1.2.14
+
+- Deprecated frida-iOS-dump and changed to bagbak
+- Match the version from local and remotes
+
 ## 1.2.10
 
 - Security Update - CVE-2020-7598

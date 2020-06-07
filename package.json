@@ -4,8 +4,8 @@
 	"repository": "https://github.com/Co2333/iOSreExtension",
 	"displayName": "iOSre Extension",
 	"description": "A fast and elegant VSCode extension used for iOSre projects. (READ README BEFORE INSTALL)",
-	"license": "SEE LICENSE FILE",
-	"version": "1.2.12",
+	"license": "MIT",
+	"version": "1.2.14",
 	"icon": "images/icon.png",
 	"engines": {
 		"vscode": "^1.43.0"

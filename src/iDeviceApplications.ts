@@ -70,22 +70,12 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                 let passpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
                 writeFileSync(passpath, selection.iSSH_password);
                 terminal.show();
-                let aopen = "\'" + LKBootStrap.shared.getBinPath() + "/bins/iOS/open\'"; // vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'iOS' ,'open'));
-                let binpath = "\'" + LKBootStrap.shared.getBinPath() + "/bins/py3/dump_oem.py\'"; // vscode.Uri.file(join(__filename,'..', '..' ,'src' ,'bins' ,'py3' ,'dump_oem.py'));
                 let terminalCommands: Array<string> = [];
-                terminalCommands.push(" export SSHPASSWORD=$(cat \'" + passpath + "\')");
-                terminalCommands.push(" rm -f \'" + passpath + "\'");
-                terminalCommands.push(" ssh-keygen -R \"[127.0.0.1]:" + selection.iSSH_mappedPort + "\" &> /dev/null");
-                terminalCommands.push(" sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -P" + selection.iSSH_mappedPort + " " + aopen + " root@127.0.0.1:/bin/");
-                terminalCommands.push(" sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'ldid -S /bin/ &> /dev/null\'");
-                terminalCommands.push(" sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 /bin/open " + ApplicationObject.infoObject[1]);
+                terminalCommands.push(" echo 'If any thing went wrong, try npm install -g bagbak'");
                 terminalCommands.push(" mkdir -p ~/Documents/iOSre");
                 terminalCommands.push(" rm -rf ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
                 terminalCommands.push(" rm -f ~/Documents/iOSre/" + ApplicationObject.infoObject[1] + ".ipa");
-                terminalCommands.push(binpath + " " + selection.udid + " " + ApplicationObject.infoObject[1] + " $SSHPASSWORD " + selection.iSSH_mappedPort + " ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
-                terminalCommands.push(" mkdir ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
-                terminalCommands.push(" cd ~/Documents/iOSre/" + ApplicationObject.infoObject[1]);
-                terminalCommands.push(" unzip ../" + ApplicationObject.infoObject[1] + ".ipa");
+                terminalCommands.push(" bagbak -f --uuid " + String(selection.udid) + " --output " + "~/Documents/iOSre/" + ApplicationObject.infoObject[1] + " " + ApplicationObject.infoObject[1]);
                 let bashScript = "";
                 let bashpath = LKutils.shared.storagePath + "/" + LKutils.shared.makeid(10);
                 terminalCommands.forEach((cmd) => {
@@ -93,7 +83,7 @@ export class ApplicationNodeProvider implements vscode.TreeDataProvider<Applicat
                     bashScript += cmd;
                 });
                 writeFileSync(bashpath, bashScript, 'utf8');
-                terminal.sendText(" /bin/bash -C \'" + bashpath + "\' && exit");
+                terminal.sendText(" /bin/bash -C \'" + bashpath + "\'");
                 vscode.window.onDidCloseTerminal((isthisone) => {
                     if (isthisone.name === "Decrypt => " + ApplicationObject.infoObject[1]) {
                         vscode.window.showInformationMessage("Decrypt " + ApplicationObject.infoObject[0] + " has finished", "open").then((selection) => {

@@ -43,16 +43,17 @@ There are some tools that you need to install on your own listed below. Again, m
 - Frida (both on macOS with pip & iOS with deb package from build.frida.re)
 - NEWEST libimobiledevice, iproxy (installed with brew from source)
 - sshpass
+- node js and bagbak (make sure to upgrade to newest version [Learn More](https://github.com/ChiChou/bagbak/issues/45))
 - python3 and pip3 with requirements located at [requirements.txt](./requirements.txt)
 
 
 Command line tips are below, remember to download [requirements.txt](./requirements.txt) and install Xcode CLI on your own.
 
-
 - ```brew uninstall --ignore-dependencies libimobiledevice usbmuxd```
 - ```brew install -v --HEAD --build-from-source usbmuxd libimobiledevice```
 - ```brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb```
 - ```pip3 install -r ./requirements.txt```
+- ```brew install nodejs && npm install -g bagbak```
 
 If you failed to build libimobiledevice or usbmuxd, try to reinstall libplist from source. [Learn More](https://github.com/Co2333/iOSreExtension/issues/10)
 
