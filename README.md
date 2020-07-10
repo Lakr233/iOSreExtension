@@ -62,6 +62,11 @@ If you failed to build libimobiledevice or usbmuxd, try to reinstall libplist fr
 - ```./autogen.sh --prefix=/opt/local --without-cython```
 - ```make && sudo make install```
 
+If you failed to launch iproxy, update libusbmuxd.
+
+- ```brew uninstall --ignore-dependencies libusbmuxd```
+- ```brew install -v --HEAD --build-from-source libusbmuxd```
+
 To build libplist, you may want to install Xcode CommandLine Tool first along with some pre-requirements.
 
 -> If you want to develop this extension, clone to somewhere else then ~/.vscode otherwise it would be replaced by VSC market place automatically and our binpack would be messed.
