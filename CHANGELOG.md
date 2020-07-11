@@ -1,5 +1,9 @@
 # http://iosre.com/t/vs/16450/
 
+## 1.2.15
+
+- Update for iproxy 2.0.3
+
 ## 1.2.14
 
 - Deprecated frida-iOS-dump and changed to bagbak

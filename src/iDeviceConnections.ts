@@ -133,8 +133,8 @@ export class iDeviceNodeProvider implements vscode.TreeDataProvider<iDeviceItem>
         if (iDeviceNodeProvider.iProxyPool[element.udid] === undefined) {
             let dp = (element).iSSH_devicePort;
             let mp = (element).iSSH_mappedPort;
-            console.log("[*] Starting iProxy " + mp + " " + dp + " " + element.udid + " &");
-            let execObject = exec("iproxy " + mp + " " + dp + " " + element.udid + "", (err, stdout, stderr) => {
+            console.log("[*] Starting iProxy " + mp + ":" + dp + " -u " + element.udid + " &");
+            let execObject = exec("iproxy " + mp + ":" + dp + " -u " + element.udid + "", (err, stdout, stderr) => {
                 console.log(stdout + stderr);
                 this.refresh();
             });
