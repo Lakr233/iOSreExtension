@@ -104,7 +104,7 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
                 uri.forEach((sel) => {
                     items.push(" sshpass -p $SSHPASSWORD scp -oStrictHostKeyChecking=no -r -P" + selection.iSSH_mappedPort + " \"" + sel.path + "\" \"root@127.0.0.1:/var/mobile/Media/DEBIAN\"");
                 });
-                items.push(" sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'dpkg -i  /var/mobile/Media/DEBIAN/*.deb\'");
+                items.push(" sshpass -p $SSHPASSWORD ssh -oStrictHostKeyChecking=no -p " + selection.iSSH_mappedPort + " root@127.0.0.1 \'dpkg -i /var/mobile/Media/DEBIAN/*.deb\'");
                 items.forEach((line) => {
                     script += line + "\n";
                 });
