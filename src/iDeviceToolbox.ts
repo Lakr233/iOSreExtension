@@ -146,7 +146,7 @@ export class ToolboxNodeProvider implements vscode.TreeDataProvider<ToolItem> {
                 let device = iDevices.shared.getDevice()!;
                 let terminal = vscode.window.createTerminal("iProxy => " + String(port) + device.udid);
                 terminal.show();
-                terminal.sendText(" iproxy " + String(port) + " " + String(port) + " " + device.udid);
+                terminal.sendText(" iproxy " + String(port) + " " + String(port) + " -u " + device.udid);
                 terminal.sendText(" exit");
             }));
             return;
