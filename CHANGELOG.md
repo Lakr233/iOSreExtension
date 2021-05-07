@@ -1,5 +1,9 @@
 # http://iosre.com/t/vs/16450/
 
+## 1.2.18
+
+- npm security update
+
 ## 1.2.16
 
 - Update for iproxy 2.0.3
